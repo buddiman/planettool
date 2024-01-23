@@ -19,6 +19,7 @@ f = () => {
     }, 0x3e8);
 };
 
+console.log("PPOTool > PPOTool started")
 v = document.createElement('div');
 v.style = "position:absolute;right:0;top:15%;height:50%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 v.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"v.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click mons to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
