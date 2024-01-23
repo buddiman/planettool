@@ -1,4 +1,4 @@
-s = null;
+socket = null;
 isElite = false;
 w = [];
 h = null;
@@ -10,12 +10,13 @@ n = 0x1;
 y = false;
 fight = () => {
     clearTimeout(p);
-    s.send(r);
+    console.log("DEBUG r > " + r)
+    socket.send(r);
     n = 0x1;
     p = setInterval(() => {
         new Uint8Array(r)[0x34] += n;
         n = (n > 0x0 ? n + 0x1 : n - 0x1) * -0x1;
-        s.send(r);
+        socket.send(r);
     }, 0x3e8);
 };
 
@@ -99,6 +100,7 @@ n = () => {
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (_0x47af98) {
             // Possible check -> 79 / 23 -> Prob. 23, only infight
+            console.log("PACKAGE LENGTH: " + _0x47af98.byteLength)
             if (_0x47af98.byteLength == 23) {
                 /*
                 if (!r) {
@@ -131,15 +133,15 @@ n = () => {
                                         _0x458770[0x54]++;
                                     }
                                 }
-                                s.send(h[i]);
+                                socket.send(h[i]);
                             }
                         }
                     }, 0x190);
                 }
             }
-            if (!s) {
-                s = this;
-                s.addEventListener("message", z);
+            if (!socket) {
+                socket = this;
+                socket.addEventListener("message", z);
             }
             _0x530e22.call(this, _0x47af98);
         };
