@@ -73,7 +73,7 @@ n = () => {
                     new Uint8Array(fightPackage)[53] = k;
                     p = setTimeout(() => y = true, 100);
                 }
-                if (_0x634c7.includes("gametype") || y) {
+                if (_0x634c7.includes("gametype")){ // || y) {
                     y = false;
                     if (!fightPackage) {
                         return;
