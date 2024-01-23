@@ -37,34 +37,38 @@ n = () => {
         pokemonSpecialMoveList = Object.fromEntries([...ppotoolWindow.children[0x1].children].map(_0x1c287e => _0x1c287e.textContent.split(" - ").map((_0x37dcc5, _0x2c06b5) => _0x2c06b5 ? _0x37dcc5 > 0x4 || _0x37dcc5 < 0x1 ? 0x1 : parseInt(_0x37dcc5) : _0x37dcc5)));
         ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
         z = _0xbee556 => {
-            let unknFileReader = new FileReader();
-            unknFileReader.addEventListener("loadend", () => {
-                let _0x7f2b45 = new Uint8Array(unknFileReader.result);
-                let _0x634c7 = String.fromCharCode(..._0x7f2b45);
-                let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
-                if (_0x634c7.includes("gametype")) {
-                    const match = _0x634c7.match(/player\|p\d+\|[^|]*\|\|\|player\|p2\|([^|]*)\|\|\|/)
+            let webSocketReader = new FileReader();
+            webSocketReader.addEventListener("loadend", () => {
+                let receivedPackage = new Uint8Array(webSocketReader.result);
+                let receivedPackageAsString = String.fromCharCode(...receivedPackage);
+                let _0x18c87c = (receivedPackageAsString.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
+                if (receivedPackageAsString.includes("gametype")) {
+                    const match = receivedPackageAsString.match(/player\|p\d+\|[^|]*\|\|\n\|player\|p2\|([^|]*)\|\|/)
                     currentPokemonName = match ? match[1] : null
-                    if(!currentPokemonName) {
+                    if (!currentPokemonName) {
                         console.log("No pokemon name found. ERROR!")
                     }
                     console.log("POKENAME: " + currentPokemonName)
                 }
-                if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
+
+                /*
+                if (!receivedPackageAsString.includes("senderName") && receivedPackageAsString.toLowerCase().includes("elite")) {
                     isElite = true;
                 }
-                if (_0x634c7.includes("|win|")) {
+                 */
+
+                if (receivedPackageAsString.includes("|win|")) {
                     // Set battle = false. Win battle
                     isInBattle = false;
                     isElite = false;
                     clearInterval(p);
                 } else {
-                    if (_0x634c7.includes("upkeep")) {
+                    if (receivedPackageAsString.includes("upkeep")) {
                         fight();
                     }
                 }
-                window.k = _0x7f2b45.find((_0x16e097, _0x136965, _0x5e1826) => _0x5e1826[_0x136965 + 0x1] == 0x0 && _0x5e1826[_0x136965 + 0x2] == 0x1 && _0x5e1826[_0x136965 + 0x3] == 0x63);
-                if (!isNaN(k) && h && _0x634c7.includes('battleId')) {
+                window.k = receivedPackage.find((_0x16e097, _0x136965, _0x5e1826) => _0x5e1826[_0x136965 + 0x1] == 0x0 && _0x5e1826[_0x136965 + 0x2] == 0x1 && _0x5e1826[_0x136965 + 0x3] == 0x63);
+                if (!isNaN(k) && h && receivedPackageAsString.includes('battleId')) {
                     // Set Battle = true?
                     isInBattle = true;
                     for (j = 0; j < 4; j++) {
@@ -73,14 +77,14 @@ n = () => {
                     // new Uint8Array(fightPackage)[53] = k;
                     p = setTimeout(() => y = true, 100);
                 }
-                if (_0x634c7.includes("gametype")){ // || y) {
+                if (receivedPackageAsString.includes("gametype")){ // || y) {
                     y = false;
                     if (!fightPackage) {
                         return;
                     }
 
                     const textEncoder = new TextEncoder();
-                    const packetAsArray = textEncoder.encode(_0x634c7);
+                    const packetAsArray = textEncoder.encode(receivedPackageAsString);
 
                     // Sequence to find ("result")
                     const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
@@ -124,7 +128,7 @@ n = () => {
                     fight();
                 }
             });
-            unknFileReader.readAsArrayBuffer(_0xbee556.data);
+            webSocketReader.readAsArrayBuffer(_0xbee556.data);
         };
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (origPackage) {
