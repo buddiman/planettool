@@ -67,6 +67,7 @@ n = () => {
                         fight();
                     }
                 }
+                /*
                 window.k = receivedPackage.find((_0x16e097, _0x136965, _0x5e1826) => _0x5e1826[_0x136965 + 0x1] == 0x0 && _0x5e1826[_0x136965 + 0x2] == 0x1 && _0x5e1826[_0x136965 + 0x3] == 0x63);
                 if (!isNaN(k) && h && receivedPackageAsString.includes('battleId')) {
                     // Set Battle = true?
@@ -75,10 +76,11 @@ n = () => {
                         new Uint8Array(h[j])[84] = 0;
                     }
                     // new Uint8Array(fightPackage)[53] = k;
-                    p = setTimeout(() => y = true, 100);
+                    // p = setTimeout(() => y = true, 100);
                 }
+                 */
                 if (receivedPackageAsString.includes("gametype")){ // || y) {
-                    y = false;
+                    isInBattle = true;
                     if (!fightPackage) {
                         return;
                     }
