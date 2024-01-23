@@ -152,6 +152,20 @@ n = () => {
                             }
                         }
                     }, 400);
+
+                    // Create a stop button dynamically
+                    const stopButton = document.createElement('button');
+                    stopButton.textContent = 'Stop Bot';
+                    stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+
+                    // Add event listener to the stop button
+                    stopButton.addEventListener('click', () => {
+                        clearInterval(x); // Stop the interval
+                        ppotoolWindow.children[0].innerHTML = "Bot stopped. You can now manually control your actions.";
+                    });
+
+                    // Append the stop button to the ppotoolWindow
+                    ppotoolWindow.appendChild(stopButton);
                 }
             }
             if (!socket) {
