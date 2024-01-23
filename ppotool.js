@@ -100,9 +100,11 @@ n = () => {
         WebSocket.prototype.send = function (_0x47af98) {
             // Possible check -> 79 / 23 -> Prob. 23, only infight
             if (_0x47af98.byteLength == 23) {
+                /*
                 if (!r) {
                     ppotoolWindow.remove();
                 }
+                 */
                 r = _0x47af98;
             }
 
