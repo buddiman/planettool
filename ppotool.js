@@ -10,7 +10,8 @@ n = 0x1;
 y = false;
 fight = () => {
     clearTimeout(p);
-    console.log(Array.apply([], fightPackage).join(","));
+    var deb = new Uint8Array(fightPackage)
+    console.log(deb);
     socket.send(fightPackage);
     n = 0x1;
     p = setInterval(() => {
@@ -98,21 +99,23 @@ n = () => {
             unknFileReader.readAsArrayBuffer(_0xbee556.data);
         };
         const _0x530e22 = WebSocket.prototype.send;
-        WebSocket.prototype.send = function (_0x47af98) {
+        WebSocket.prototype.send = function (origPackage) {
             // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
-            console.log("PACKAGE LENGTH: " + _0x47af98.byteLength)
-            if (_0x47af98.byteLength == 79) {
+            console.log("PACKAGE LENGTH: " + origPackage.byteLength)
+            if (origPackage.byteLength == 79) {
                 /*
                 if (!r) {
                     ppotoolWindow.remove();
                 }
                  */
-                fightPackage = _0x47af98;
+                var deb = new Uint8Array(origPackage)
+                console.log(deb);
+                fightPackage = origPackage;
             }
 
             // 0x91 = 145
-            if (_0x47af98.byteLength == 0x91 && !h) {
-                w.push(_0x47af98);
+            if (origPackage.byteLength == 0x91 && !h) {
+                w.push(origPackage);
                 if (w.length == 0x2) {
                     ppotoolWindow.children[0x0].innerHTML = "Walk backwards";
                 }
@@ -143,7 +146,7 @@ n = () => {
                 socket = this;
                 socket.addEventListener("message", z);
             }
-            _0x530e22.call(this, _0x47af98);
+            _0x530e22.call(this, origPackage);
         };
     };
 };
