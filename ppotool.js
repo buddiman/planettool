@@ -11,7 +11,6 @@ n = 0x1;
 y = false;
 fight = () => {
     clearTimeout(p);
-    //socket.send(fightPackage);
     new Uint8Array(fightPackage)[51] = checksums[0];
     new Uint8Array(fightPackage)[52] = checksums[1];
     new Uint8Array(fightPackage)[53] = checksums[2];
@@ -28,7 +27,7 @@ g = () => prompt("Mon to add");
 
 n = () => {
     pokemonToCatchList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
-    if(pokemonToCatchList) {
+    if (pokemonToCatchList) {
         console.log("PPOTool > Catchlist: " + pokemonToCatchList)
     }
     ["Moves to use", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => ppotoolWindow.children[_0x27ce07].innerHTML = _0x53d138);
@@ -64,30 +63,17 @@ n = () => {
                     clearInterval(p);
                 } else {
                     if (receivedPackageAsString.includes("upkeep")) {
+                        // TODO: investigate
                         console.log("UPKEEP?!?!")
                         fight();
                     }
                 }
-                /*
-                window.k = receivedPackage.find((_0x16e097, _0x136965, _0x5e1826) => _0x5e1826[_0x136965 + 0x1] == 0x0 && _0x5e1826[_0x136965 + 0x2] == 0x1 && _0x5e1826[_0x136965 + 0x3] == 0x63);
-                if (!isNaN(k) && h && receivedPackageAsString.includes('battleId')) {
-                    // Set Battle = true?
-                    isInBattle = true;
-                    for (j = 0; j < 4; j++) {
-                        new Uint8Array(h[j])[84] = 0;
-                    }
-                    // new Uint8Array(fightPackage)[53] = k;
-                    // p = setTimeout(() => y = true, 100);
-                }
-                 */
-                if (receivedPackageAsString.includes("gametype")){ // || y) {
+
+                if (receivedPackageAsString.includes("gametype")) { // || y) {
                     isInBattle = true;
                     if (!fightPackage) {
                         return;
                     }
-
-                    //const textEncoder = new TextEncoder();
-                    //const packetAsArray = textEncoder.encode(receivedPackageAsString);
 
                     // Sequence to find ("result")
                     const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
@@ -95,16 +81,10 @@ n = () => {
                     for (let i = 0; i < receivedPackage.length; i++) {
                         // Check if the current position matches the start of the sequence
                         if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
-                            // Move the index to the position after the sequence
                             i += sequenceToFind.length;
 
-                            // Extract the next 3 bytes
                             const extractedBytes = receivedPackage.subarray(i + 5, i + 8);
-
-                            // Store the result
                             checksums = Array.from(extractedBytes);
-
-                            // Break the loop since we found the sequence and extracted the bytes
                             break;
                         }
                     }
@@ -112,7 +92,6 @@ n = () => {
                     console.log("Checksums: " + checksums);
 
                     if (pokemonToCatchList.includes(currentPokemonName)) {
-                        console.log("POKENAME: " + currentPokemonName)
                         fetch(discord[0], {
                             'method': "post",
                             'headers': {
@@ -136,15 +115,7 @@ n = () => {
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (origPackage) {
             // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
-            console.log("PACKAGE LENGTH: " + origPackage.byteLength)
             if (origPackage.byteLength == 79 && !fightPackage) {
-                /*
-                if (!r) {
-                    ppotoolWindow.remove();
-                }
-                 */
-                var deb = new Uint8Array(origPackage)
-                console.log(deb);
                 fightPackage = origPackage;
             }
 
