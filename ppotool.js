@@ -27,6 +27,7 @@ g = () => prompt("Mon to add");
 
 n = () => {
     pokemonToCatchList = [...v.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
+    console.log("PPOTool > Catchlist: " + pokemonToCatchList)
     ["Moves to use", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => v.children[_0x27ce07].innerHTML = _0x53d138);
     g = () => prompt("Mon") + " - " + prompt("Move to use (ie. 1 for move in slot 1)");
     n = () => {
