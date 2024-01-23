@@ -70,7 +70,7 @@ n = () => {
                     for (j = 0; j < 4; j++) {
                         new Uint8Array(h[j])[84] = 0;
                     }
-                    new Uint8Array(fightPackage)[53] = k;
+                    // new Uint8Array(fightPackage)[53] = k;
                     p = setTimeout(() => y = true, 100);
                 }
                 if (_0x634c7.includes("gametype")){ // || y) {
@@ -130,7 +130,7 @@ n = () => {
         WebSocket.prototype.send = function (origPackage) {
             // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
             console.log("PACKAGE LENGTH: " + origPackage.byteLength)
-            if (origPackage.byteLength == 79) {
+            if (origPackage.byteLength == 79 && !fightPackage) {
                 /*
                 if (!r) {
                     ppotoolWindow.remove();
