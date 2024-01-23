@@ -15,10 +15,10 @@ fight = () => {
     socket.send(fightPackage);
     n = 0x1;
     p = setInterval(() => {
-        new Uint8Array(fightPackage)[0x34] += n;
+        new Uint8Array(fightPackage)[52] += n;
         n = (n > 0x0 ? n + 0x1 : n - 0x1) * -0x1;
         socket.send(fightPackage);
-    }, 0x3e8);
+    }, 1000);
 };
 
 console.log("PPOTool > PPOTool started")
@@ -42,10 +42,10 @@ n = () => {
             unknFileReader.addEventListener("loadend", () => {
                 let _0x7f2b45 = new Uint8Array(unknFileReader.result);
                 let _0x634c7 = String.fromCharCode(..._0x7f2b45);
-                let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0x0].slice(0x1));
+                let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
                 if (_0x634c7.includes("encounterType")) {
                     console.log("POKENAME: " + currentPokemonName)
-                    currentPokemonName = /[^a-z]/i.test(_0x18c87c[0x2]) ? _0x18c87c[0x3] : _0x18c87c[0x2];
+                    currentPokemonName = /[^a-z]/i.test(_0x18c87c[2]) ? _0x18c87c[0x3] : _0x18c87c[2];
                     console.log("POKENAME 2: " + currentPokemonName)
                 }
                 if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
@@ -65,11 +65,11 @@ n = () => {
                 if (!isNaN(k) && h && _0x634c7.includes('battleId')) {
                     // Set Battle = true?
                     isInBattle = true;
-                    for (j = 0x0; j < 0x4; j++) {
-                        new Uint8Array(h[j])[0x54] = 0x0;
+                    for (j = 0; j < 4; j++) {
+                        new Uint8Array(h[j])[84] = 0;
                     }
-                    new Uint8Array(fightPackage)[0x35] = k;
-                    p = setTimeout(() => y = true, 0x64);
+                    new Uint8Array(fightPackage)[53] = k;
+                    p = setTimeout(() => y = true, 100);
                 }
                 if (_0x634c7.includes("battleType") || y) {
                     y = false;
@@ -78,13 +78,13 @@ n = () => {
                     }
                     if (pokemonToCatchList.includes(currentPokemonName)) {
                         console.log("POKENAME: " + currentPokemonName)
-                        fetch(discord[0x0], {
+                        fetch(discord[0], {
                             'method': "post",
                             'headers': {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '<@' + discord[0x1] + "> we got " + currentPokemonName + '!',
+                                'content': '<@' + discord[1] + "> we got " + currentPokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
@@ -92,8 +92,8 @@ n = () => {
                         });
                         return;
                     }
-                    new Uint8Array(fightPackage)[0x4c] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
-                    fight();
+                    new Uint8Array(fightPackage)[76] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
+                    //fight();
                 }
             });
             unknFileReader.readAsArrayBuffer(_0xbee556.data);
@@ -114,32 +114,32 @@ n = () => {
             }
 
             // 0x91 = 145
-            if (origPackage.byteLength == 0x91 && !h) {
+            if (origPackage.byteLength == 145 && !h) {
                 w.push(origPackage);
-                if (w.length == 0x2) {
-                    ppotoolWindow.children[0x0].innerHTML = "Walk backwards";
+                if (w.length == 2) {
+                    ppotoolWindow.children[0].innerHTML = "Walk backwards";
                 }
-                if (w.length == 0x4) {
-                    ppotoolWindow.children[0x0].innerHTML = "Use a move once the encounter starts. Refresh page to stop the bot. Happy hunting!";
+                if (w.length == 4) {
+                    ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. Refresh page to stop the bot. Happy hunting!";
                     h = w;
                     x = setInterval(() => {
                         // MOVEMENT HERE!
                         if (!isInBattle) {
-                            for (i = 0x0; i < 0x4; i++) {
-                                for (j = 0x0; j < 0x4; j++) {
+                            for (i = 0; i < 4; i++) {
+                                for (j = 0; j < 4; j++) {
                                     let _0x458770 = new Uint8Array(h[j]);
                                     _0x458770[0x45]++;
-                                    if (_0x458770[0x45] == 0x0) {
-                                        _0x458770[0x44]++;
+                                    if (_0x458770[69] == 0) {
+                                        _0x458770[68]++;
                                     }
-                                    if (i % 0x2 > 0x0) {
-                                        _0x458770[0x54]++;
+                                    if (i % 2 > 0) {
+                                        _0x458770[84]++;
                                     }
                                 }
                                 socket.send(h[i]);
                             }
                         }
-                    }, 0x190);
+                    }, 400);
                 }
             }
             if (!socket) {
