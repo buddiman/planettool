@@ -84,16 +84,15 @@ n = () => {
 
                     // Sequence to find ("result")
                     const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
-                    let resultArray = [];
 
                     for (let i = 0; i < packetAsArray.length; i++) {
                         // Check if the current position matches the start of the sequence
-                        if (byteArray.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+                        if (packetAsArray.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
                             // Move the index to the position after the sequence
                             i += sequenceToFind.length;
 
                             // Extract the next 3 bytes
-                            const extractedBytes = byteArray.subarray(i + 3, i + 6);
+                            const extractedBytes = packetAsArray.subarray(i + 3, i + 6);
 
                             // Store the result
                             checksums = Array.from(extractedBytes);
