@@ -1,14 +1,14 @@
-socket = null;
-isElite = false;
-w = [];
-h = null;
-checksums = null
-isInBattle = false;
-fightPackage = null;
-currentPokemonName = '';
-p = null;
-n = 0x1;
-y = false;
+let socket = null;
+let isElite = false;
+let w = [];
+let h = null;
+let checksums = null
+let isInBattle = false;
+let fightPackage = null;
+let currentPokemonName = '';
+let p = null;
+let n = 0x1;
+let y = false;
 fight = () => {
     clearTimeout(p);
     new Uint8Array(fightPackage)[51] = checksums[0];
@@ -26,14 +26,22 @@ ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppo
 g = () => prompt("Mon to add");
 
 n = () => {
-    pokemonToCatchList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
+    let customList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
+
+    let pokemonToCatchList
+    if(!customList) {
+        pokemonToCatchList = legendaries.concat(extremeRares, veryRares)
+    } else {
+        pokemonToCatchList = customList
+    }
+
     if (pokemonToCatchList) {
         console.log("PPOTool > Catchlist: " + pokemonToCatchList)
     }
-    ["Moves to use", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => ppotoolWindow.children[_0x27ce07].innerHTML = _0x53d138);
+    ["Moves to use GEHT NET", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => ppotoolWindow.children[_0x27ce07].innerHTML = _0x53d138);
     g = () => prompt("Mon") + " - " + prompt("Move to use (ie. 1 for move in slot 1)");
     n = () => {
-        pokemonSpecialMoveList = Object.fromEntries([...ppotoolWindow.children[0x1].children].map(_0x1c287e => _0x1c287e.textContent.split(" - ").map((_0x37dcc5, _0x2c06b5) => _0x2c06b5 ? _0x37dcc5 > 0x4 || _0x37dcc5 < 0x1 ? 0x1 : parseInt(_0x37dcc5) : _0x37dcc5)));
+        let pokemonSpecialMoveList = Object.fromEntries([...ppotoolWindow.children[0x1].children].map(_0x1c287e => _0x1c287e.textContent.split(" - ").map((_0x37dcc5, _0x2c06b5) => _0x2c06b5 ? _0x37dcc5 > 0x4 || _0x37dcc5 < 0x1 ? 0x1 : parseInt(_0x37dcc5) : _0x37dcc5)));
         ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
         z = _0xbee556 => {
             let webSocketReader = new FileReader();
@@ -88,8 +96,6 @@ n = () => {
                             break;
                         }
                     }
-
-                    console.log("Checksums: " + checksums);
 
                     if (pokemonToCatchList.includes(currentPokemonName)) {
                         fetch(discord[0], {
@@ -157,3 +163,30 @@ n = () => {
     };
 };
 document.body.appendChild(ppotoolWindow);
+
+const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Golduck", "Growlithe", "Abra",
+    "Kadabra", "Alakazam", "Ponyta", "Rapidash", "Slowpoke", "Slowbro", "Doduo", "Dodrio", "Seel", "Dewgong",
+    "Exeggcute", "Cubone", "Marowak", "Chansey", "Tangela", "Seadra", "Staryu", "Starmie", "Magmar", "Tauros",
+    "Ditto", "Chinchou", "Pichu", "Cleffa", "Igglybuff", "Natu", "Mareep", "Flaaffy", "Ampharos", "Yanma",
+    "Murkrow", "Wobbuffet", "Girafarig", "Teddiursa", "Ursaring", "Corsola", "Mantine", "Houndour", "Houndoom",
+    "Phanpy", "Donphan", "Magby", "Miltank", "Makuhita", "Hariyama", "Nosepass", "Aron", "Lairon", "Aggron",
+    "Electrike", "Manectric", "Carvanha", "Sharpedo", "Wailmer", "Wailord", "Torkoal", "Spoink", "Trapinch",
+    "Flygon", "Zangoose", "Seviper", "Lunatone", "Solrock", "Barboach", "Whishcash", "Baltoy", "Claydol",
+    "Shuppet", "Banette", "Absol", "Clamperl", "Relicanth", "Starly", "Shinx", "Luxio", "Luxray", "Buizel",
+    "Floatzel", "Happiny", "Croagunk", "Toxicroak", "Mantyke", "Yanmega", "Rotom", "Roggenrola", "Woobat",
+    "Drilbur", "Excadrill", "Timburr", "Maractus", "Sigilyph", "Trubbish", "Zoroark", "Gothita", "Frillish",
+    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher"]
+
+const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squirtle", "Blastoise", "Machoke",
+    "Farfetch'd", "Onix", "Rhyhorn", "Kangaskhan", "Scyther", "Electabuzz", "Pinsir", "Snorlax", "Dratini", "Dragonair",
+    "Dragonite", "Chikorita", "Meganium", "Cyndaquil", "Typhlosion", "Totodile", "Feraligatr", "Sudowoodo", "Gligar",
+    "Steelix", "Heracross", "Sneasel", "Swinub", "Skarmory", "Elekid", "Treecko", "Sceptile", "Torchic", "Mudkip",
+    "Swampert", "Mawile", "Numel", "Swablu", "Altaria", "Feebas", "Milotic", "Duskull", "Dusclops", "Tropius", "Glalie",
+    "Spheal", "Walrein", "Bagon", "Salamence", "Turtwig", "Chimchar", "Infernape", "Piplup", "Empoleon", "Bronzor",
+    "Bronzong", "Bonsly", "Mime Jr.", "Spritomb", "Gible", "Munchlax", "Hippopotas", "Hippowdon", "Skorupi", "Drapion",
+    "Snover", "Abomasnow", "Mamoswine", "Phione", "Sandile", "Solosis", "Foongus", "Amoonguss", "Litwick", "Lampent",
+    "Druddigon", "Golett", "Pawniard", "Deino", "Hydreigon", "Larvesta", "Volcarona", "Chespin", "Fennekin",
+    "Fletchling", "Helioptile", "Goomy", "Klefki"]
+
+const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", "Suicune", "Heatran",
+    "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
