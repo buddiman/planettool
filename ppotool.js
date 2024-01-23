@@ -25,7 +25,7 @@ v.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"v.children[1].i
 g = () => prompt("Mon to add");
 
 n = () => {
-    c = [...v.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
+    pokemonToCatchList = [...v.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
     ["Moves to use", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => v.children[_0x27ce07].innerHTML = _0x53d138);
     g = () => prompt("Mon") + " - " + prompt("Move to use (ie. 1 for move in slot 1)");
     n = () => {
@@ -39,7 +39,6 @@ n = () => {
                 let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0x0].slice(0x1));
                 if (_0x634c7.includes("encounterType")) {
                     currentPokemonName = /[^a-z]/i.test(_0x18c87c[0x2]) ? _0x18c87c[0x3] : _0x18c87c[0x2];
-                    console.log("POKENAME: " + currentPokemonName)
                 }
                 if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
                     l = true;
@@ -67,7 +66,8 @@ n = () => {
                     if (!r) {
                         return;
                     }
-                    if (c.includes(currentPokemonName)) {
+                    if (pokemonToCatchList.includes(currentPokemonName)) {
+                        console.log("POKENAME: " + currentPokemonName)
                         fetch(discord[0x0], {
                             'method': "post",
                             'headers': {
