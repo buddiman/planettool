@@ -43,10 +43,13 @@ n = () => {
                 let _0x7f2b45 = new Uint8Array(unknFileReader.result);
                 let _0x634c7 = String.fromCharCode(..._0x7f2b45);
                 let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
-                if (_0x634c7.includes("encounterType")) {
+                if (_0x634c7.includes("gametype")) {
+                    const match = _0x634c7.match(/player\|p\d+\|[^|]*\|\|\|player\|p2\|([^|]*)\|\|\|/)
+                    currentPokemonName = match ? match[1] : null
+                    if(!currentPokemonName) {
+                        console.log("No pokemon name found. ERROR!")
+                    }
                     console.log("POKENAME: " + currentPokemonName)
-                    currentPokemonName = /[^a-z]/i.test(_0x18c87c[2]) ? _0x18c87c[0x3] : _0x18c87c[2];
-                    console.log("POKENAME 2: " + currentPokemonName)
                 }
                 if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
                     isElite = true;
@@ -71,7 +74,7 @@ n = () => {
                     new Uint8Array(fightPackage)[53] = k;
                     p = setTimeout(() => y = true, 100);
                 }
-                if (_0x634c7.includes("battleType") || y) {
+                if (_0x634c7.includes("gametype") || y) {
                     y = false;
                     if (!fightPackage) {
                         return;
