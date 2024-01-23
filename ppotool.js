@@ -64,6 +64,7 @@ n = () => {
                     clearInterval(p);
                 } else {
                     if (receivedPackageAsString.includes("upkeep")) {
+                        console.log("UPKEEP?!?!")
                         fight();
                     }
                 }
@@ -85,20 +86,20 @@ n = () => {
                         return;
                     }
 
-                    const textEncoder = new TextEncoder();
-                    const packetAsArray = textEncoder.encode(receivedPackageAsString);
+                    //const textEncoder = new TextEncoder();
+                    //const packetAsArray = textEncoder.encode(receivedPackageAsString);
 
                     // Sequence to find ("result")
                     const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
 
-                    for (let i = 0; i < packetAsArray.length; i++) {
+                    for (let i = 0; i < receivedPackage.length; i++) {
                         // Check if the current position matches the start of the sequence
-                        if (packetAsArray.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+                        if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
                             // Move the index to the position after the sequence
                             i += sequenceToFind.length;
 
                             // Extract the next 3 bytes
-                            const extractedBytes = packetAsArray.subarray(i + 5, i + 8);
+                            const extractedBytes = receivedPackage.subarray(i + 5, i + 8);
 
                             // Store the result
                             checksums = Array.from(extractedBytes);
