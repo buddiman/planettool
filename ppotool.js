@@ -2,6 +2,7 @@ socket = null;
 isElite = false;
 w = [];
 h = null;
+checksums = null
 isInBattle = false;
 fightPackage = null;
 currentPokemonName = '';
@@ -10,13 +11,11 @@ n = 0x1;
 y = false;
 fight = () => {
     clearTimeout(p);
-    var deb = new Uint8Array(fightPackage)
-    console.log(deb);
-    socket.send(fightPackage);
-    n = 0x1;
+    //socket.send(fightPackage);
+    new Uint8Array(fightPackage)[51] = checksums[0];
+    new Uint8Array(fightPackage)[52] = checksums[1];
+    new Uint8Array(fightPackage)[53] = checksums[2];
     p = setInterval(() => {
-        new Uint8Array(fightPackage)[52] += n;
-        n = (n > 0x0 ? n + 0x1 : n - 0x1) * -0x1;
         socket.send(fightPackage);
     }, 1000);
 };
@@ -79,6 +78,33 @@ n = () => {
                     if (!fightPackage) {
                         return;
                     }
+
+                    const textEncoder = new TextEncoder();
+                    const packetAsArray = textEncoder.encode(_0x634c7);
+
+                    // Sequence to find ("result")
+                    const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
+                    let resultArray = [];
+
+                    for (let i = 0; i < packetAsArray.length; i++) {
+                        // Check if the current position matches the start of the sequence
+                        if (byteArray.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+                            // Move the index to the position after the sequence
+                            i += sequenceToFind.length;
+
+                            // Extract the next 3 bytes
+                            const extractedBytes = byteArray.subarray(i + 3, i + 6);
+
+                            // Store the result
+                            checksums = Array.from(extractedBytes);
+
+                            // Break the loop since we found the sequence and extracted the bytes
+                            break;
+                        }
+                    }
+
+                    console.log("Checksums: " + checksums);
+
                     if (pokemonToCatchList.includes(currentPokemonName)) {
                         console.log("POKENAME: " + currentPokemonName)
                         fetch(discord[0], {
@@ -95,8 +121,8 @@ n = () => {
                         });
                         return;
                     }
-                    new Uint8Array(fightPackage)[76] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
-                    //fight();
+                    // new Uint8Array(fightPackage)[76] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
+                    fight();
                 }
             });
             unknFileReader.readAsArrayBuffer(_0xbee556.data);
