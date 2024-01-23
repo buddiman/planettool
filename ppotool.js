@@ -39,7 +39,9 @@ n = () => {
                 let _0x634c7 = String.fromCharCode(..._0x7f2b45);
                 let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0x0].slice(0x1));
                 if (_0x634c7.includes("encounterType")) {
+                    console.log("POKENAME: " + currentPokemonName)
                     currentPokemonName = /[^a-z]/i.test(_0x18c87c[0x2]) ? _0x18c87c[0x3] : _0x18c87c[0x2];
+                    console.log("POKENAME 2: " + currentPokemonName)
                 }
                 if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
                     l = true;
