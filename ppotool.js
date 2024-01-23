@@ -92,7 +92,7 @@ n = () => {
                             i += sequenceToFind.length;
 
                             // Extract the next 3 bytes
-                            const extractedBytes = packetAsArray.subarray(i + 3, i + 6);
+                            const extractedBytes = packetAsArray.subarray(i + 5, i + 8);
 
                             // Store the result
                             checksums = Array.from(extractedBytes);
