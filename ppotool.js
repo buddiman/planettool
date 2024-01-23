@@ -104,7 +104,7 @@ n = () => {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '<@' + discord[1] + "> we got " + currentPokemonName + '!',
+                                'content': '@' + discord[1] + " we got " + currentPokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
