@@ -21,7 +21,7 @@ fight = () => {
 
 console.log("PPOTool > PPOTool started")
 ppotoolWindow = document.createElement('div');
-ppotoolWindow.style = "position:absolute;right:0;top:15%;height:50%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click mons to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
 g = () => prompt("Mon to add");
 
@@ -152,6 +152,20 @@ n = () => {
                             }
                         }
                     }, 400);
+
+                    // Create a stop button dynamically
+                    const stopButton = document.createElement('button');
+                    stopButton.textContent = 'Stop Bot';
+                    stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+
+                    // Add event listener to the stop button
+                    stopButton.addEventListener('click', () => {
+                        clearInterval(x); // Stop the interval
+                        ppotoolWindow.children[0].innerHTML = "Bot stopped. You can now manually control your actions.";
+                    });
+
+                    // Append the stop button to the ppotoolWindow
+                    ppotoolWindow.appendChild(stopButton);
                 }
             }
             if (!socket) {
