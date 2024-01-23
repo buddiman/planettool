@@ -29,7 +29,7 @@ n = () => {
     let customList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
 
     let pokemonToCatchList
-    if(!customList) {
+    if(customList.length === 0) {
         pokemonToCatchList = legendaries.concat(extremeRares, veryRares)
     } else {
         pokemonToCatchList = customList
