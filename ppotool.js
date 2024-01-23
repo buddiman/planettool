@@ -3,20 +3,20 @@ isElite = false;
 w = [];
 h = null;
 isInBattle = false;
-r = null;
+fightPackage = null;
 currentPokemonName = '';
 p = null;
 n = 0x1;
 y = false;
 fight = () => {
     clearTimeout(p);
-    console.log("DEBUG r > " + r)
-    socket.send(r);
+    console.log(Array.apply([], fightPackage).join(","));
+    socket.send(fightPackage);
     n = 0x1;
     p = setInterval(() => {
-        new Uint8Array(r)[0x34] += n;
+        new Uint8Array(fightPackage)[0x34] += n;
         n = (n > 0x0 ? n + 0x1 : n - 0x1) * -0x1;
-        socket.send(r);
+        socket.send(fightPackage);
     }, 0x3e8);
 };
 
@@ -67,12 +67,12 @@ n = () => {
                     for (j = 0x0; j < 0x4; j++) {
                         new Uint8Array(h[j])[0x54] = 0x0;
                     }
-                    new Uint8Array(r)[0x35] = k;
+                    new Uint8Array(fightPackage)[0x35] = k;
                     p = setTimeout(() => y = true, 0x64);
                 }
                 if (_0x634c7.includes("battleType") || y) {
                     y = false;
-                    if (!r) {
+                    if (!fightPackage) {
                         return;
                     }
                     if (pokemonToCatchList.includes(currentPokemonName)) {
@@ -91,7 +91,7 @@ n = () => {
                         });
                         return;
                     }
-                    new Uint8Array(r)[0x4c] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
+                    new Uint8Array(fightPackage)[0x4c] = (isElite ? pokemonSpecialMoveList.elite : pokemonSpecialMoveList[currentPokemonName] + 0x30) ?? 0x31;
                     fight();
                 }
             });
@@ -107,7 +107,7 @@ n = () => {
                     ppotoolWindow.remove();
                 }
                  */
-                r = _0x47af98;
+                fightPackage = _0x47af98;
             }
 
             // 0x91 = 145
