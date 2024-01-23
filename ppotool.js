@@ -99,9 +99,9 @@ n = () => {
         };
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (_0x47af98) {
-            // Possible check -> 79 / 23 -> Prob. 23, only infight
+            // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
             console.log("PACKAGE LENGTH: " + _0x47af98.byteLength)
-            if (_0x47af98.byteLength == 23) {
+            if (_0x47af98.byteLength == 79) {
                 /*
                 if (!r) {
                     ppotoolWindow.remove();
