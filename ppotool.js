@@ -1,18 +1,3 @@
-const _0x86ce67 = function () {
-    let _0x412ebf = true;
-    return function (_0xcf9c49, _0x5abb36) {
-        const _0x36ceaa = _0x412ebf ? function () {
-            if (_0x5abb36) {
-                const _0x55fa72 = _0x5abb36.apply(_0xcf9c49, arguments);
-                _0x5abb36 = null;
-                return _0x55fa72;
-            }
-        } : function () {};
-        _0x412ebf = false;
-        return _0x36ceaa;
-    };
-}();
-
 s = null;
 l = false;
 w = [];
