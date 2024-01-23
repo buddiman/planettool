@@ -1,14 +1,14 @@
-let socket = null;
-let isElite = false;
-let w = [];
-let h = null;
-let checksums = null
-let isInBattle = false;
-let fightPackage = null;
-let currentPokemonName = '';
-let p = null;
-let n = 0x1;
-let y = false;
+socket = null;
+isElite = false;
+w = [];
+h = null;
+checksums = null
+isInBattle = false;
+fightPackage = null;
+currentPokemonName = '';
+p = null;
+n = 0x1;
+y = false;
 fight = () => {
     clearTimeout(p);
     new Uint8Array(fightPackage)[51] = checksums[0];
