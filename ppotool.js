@@ -15,7 +15,7 @@ const _0x86ce67 = function () {
 const _0x16ee31 = _0x86ce67(this, function () {
     return _0x16ee31.toString().search("(((.+)+)+)+$").toString().constructor(_0x16ee31).search("(((.+)+)+)+$");
 });
-_0x16ee31();
+//_0x16ee31();
 s = null;
 l = false;
 w = [];
