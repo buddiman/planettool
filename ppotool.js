@@ -4,7 +4,7 @@ w = [];
 h = null;
 b = false;
 r = null;
-m = '';
+currentPokemonName = '';
 p = null;
 n = 0x1;
 y = false;
@@ -18,10 +18,12 @@ f = () => {
         s.send(r);
     }, 0x3e8);
 };
+
 v = document.createElement('div');
 v.style = "position:absolute;right:0;top:15%;height:50%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 v.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"v.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click mons to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
 g = () => prompt("Mon to add");
+
 n = () => {
     c = [...v.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
     ["Moves to use", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => v.children[_0x27ce07].innerHTML = _0x53d138);
@@ -36,7 +38,8 @@ n = () => {
                 let _0x634c7 = String.fromCharCode(..._0x7f2b45);
                 let _0x18c87c = (_0x634c7.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0x0].slice(0x1));
                 if (_0x634c7.includes("encounterType")) {
-                    m = /[^a-z]/i.test(_0x18c87c[0x2]) ? _0x18c87c[0x3] : _0x18c87c[0x2];
+                    currentPokemonName = /[^a-z]/i.test(_0x18c87c[0x2]) ? _0x18c87c[0x3] : _0x18c87c[0x2];
+                    console.log("POKENAME: " + currentPokemonName)
                 }
                 if (!_0x634c7.includes("senderName") && _0x634c7.toLowerCase().includes("elite")) {
                     l = true;
@@ -64,14 +67,14 @@ n = () => {
                     if (!r) {
                         return;
                     }
-                    if (c.includes(m)) {
+                    if (c.includes(currentPokemonName)) {
                         fetch(discord[0x0], {
                             'method': "post",
                             'headers': {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '<@' + discord[0x1] + "> we got " + m + '!',
+                                'content': '<@' + discord[0x1] + "> we got " + currentPokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
@@ -79,7 +82,7 @@ n = () => {
                         });
                         return;
                     }
-                    new Uint8Array(r)[0x4c] = (l ? o.elite : o[m] + 0x30) ?? 0x31;
+                    new Uint8Array(r)[0x4c] = (l ? o.elite : o[currentPokemonName] + 0x30) ?? 0x31;
                     f();
                 }
             });
