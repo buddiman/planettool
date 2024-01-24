@@ -172,16 +172,18 @@ n = () => {
                         }
                     }, 400);
 
-                    const pokemonCatchListElement = document.createElement('ul')
+                    // Create a selectable textbox dynamically
+                    const selectBox = document.createElement('select');
+                    selectBox.style.marginTop = '10px'; // Add some margin for better visibility
+
+                    // Populate the select box with options from pokemonToCatchList
                     pokemonToCatchList.forEach(pokemonName => {
-                        const listItemElement = document.createElement('li');
+                        const optionElement = document.createElement('option');
+                        optionElement.value = pokemonName;
+                        optionElement.textContent = pokemonName;
+                        selectBox.appendChild(optionElement);
+                    });
 
-                        // Set the text content of the list item to the Pokemon name
-                        listItemElement.textContent = pokemonName;
-
-                        // Append the list item to the unordered list
-                        pokemonCatchListElement.appendChild(listItemElement);
-                    })
 
                     // Create a stop button dynamically
                     const stopButton = document.createElement('button');
@@ -205,7 +207,7 @@ n = () => {
 
                     // Append the stop button to the ppotoolWindow
                     ppotoolWindow.appendChild(stopButton);
-                    ppotoolWindow.appendChild(pokemonCatchListElement)
+                    ppotoolWindow.appendChild(selectBox);
                 }
             }
             if (!socket) {
