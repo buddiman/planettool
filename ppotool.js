@@ -50,7 +50,7 @@ n = () => {
                 let receivedPackageAsString = String.fromCharCode(...receivedPackage);
                 let _0x18c87c = (receivedPackageAsString.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
                 if (receivedPackageAsString.includes("gametype")) {
-                    const match = receivedPackageAsString.match(/player\|p\d+\|[^|]*\|\|\n\|player\|p2\|([^|]*)\|\|/)
+                    const match = receivedPackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
                     currentPokemonName = match ? match[1] : null
                     if (!currentPokemonName) {
                         console.log("No pokemon name found. ERROR!")
@@ -104,7 +104,7 @@ n = () => {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '@' + discord[1] + " we got " + currentPokemonName + '!',
+                                'content': '<@' + discord[1] + "> we got " + currentPokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
