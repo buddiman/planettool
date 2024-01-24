@@ -55,7 +55,7 @@ function fight() {
 
 console.log("PPOTool > PPOTool started");
 const ppotoolWindow = document.createElement('div');
-ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
     "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
 
@@ -88,14 +88,14 @@ function initializeTool() {
 
 
             if (receivedPackageAsString.includes("|win|")) {
-                // Set battle = false. Win battle
+                // Win or run away successful
                 isInBattle = false;
                 isElite = false;
                 isShiny = false;
                 clearInterval(p);
             } else {
                 if (receivedPackageAsString.includes("upkeep") && !isPaused) {
-                    // Is called when a action in battle is executed but the fight is not finished
+                    // Is called when an action in battle is executed but the fight is not finished
                     console.log("UPKEEP?!?!")
                     fight();
                 }
@@ -154,17 +154,17 @@ function initializeTool() {
         if (origPackage == null) {
             return;
         }
-        if (origPackage.byteLength == 79 && !fightPackage) {
+        if (origPackage.byteLength === 79 && !fightPackage) {
             fightPackage = origPackage;
         }
 
         // 0x91 = 145
-        if (origPackage.byteLength == 145 && !h) {
+        if (origPackage.byteLength === 145 && !h) {
             w.push(origPackage);
-            if (w.length == 2) {
+            if (w.length === 2) {
                 ppotoolWindow.children[0].innerHTML = "Take a step in the opposite direction";
             }
-            if (w.length == 4) {
+            if (w.length === 4) {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
                 x = setInterval(() => {
