@@ -27,8 +27,8 @@ fight = () => {
 console.log("PPOTool > PPOTool started")
 ppotoolWindow = document.createElement('div');
 ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
-ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click mons to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
-g = () => prompt("Mon to add");
+ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click on Pokemon to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
+g = () => prompt("Pokemon for custom catchlist");
 
 n = () => {
     let customList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
@@ -40,13 +40,7 @@ n = () => {
         pokemonToCatchList = customList
     }
 
-    if (pokemonToCatchList) {
-        console.log("PPOTool > Catchlist: " + pokemonToCatchList)
-    }
-    ["Moves to use GEHT NET", '', "Add (enter \"elite\" for all elites)", "Next (default is slot 1)"].forEach((_0x53d138, _0x27ce07) => ppotoolWindow.children[_0x27ce07].innerHTML = _0x53d138);
-    g = () => prompt("Mon") + " - " + prompt("Move to use (ie. 1 for move in slot 1)");
     n = () => {
-        let pokemonSpecialMoveList = Object.fromEntries([...ppotoolWindow.children[0x1].children].map(_0x1c287e => _0x1c287e.textContent.split(" - ").map((_0x37dcc5, _0x2c06b5) => _0x2c06b5 ? _0x37dcc5 > 0x4 || _0x37dcc5 < 0x1 ? 0x1 : parseInt(_0x37dcc5) : _0x37dcc5)));
         ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
         z = _0xbee556 => {
             let webSocketReader = new FileReader();
