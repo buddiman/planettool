@@ -131,11 +131,11 @@ function initializeTool() {
 // initializeTool();
 
 // Create a button for the 'Next' action
-// const nextButton = document.createElement('button');
-// nextButton.textContent = 'Next';
-// nextButton.addEventListener('click', initializeTool);
+const nextButton = document.createElement('button');
+nextButton.textContent = 'Next';
+nextButton.addEventListener('click', initializeTool);
 
 // Append the 'Next' button to the ppotoolWindow
-// ppotoolWindow.appendChild(nextButton);
+ppotoolWindow.appendChild(nextButton);
 
 document.body.appendChild(ppotoolWindow);
