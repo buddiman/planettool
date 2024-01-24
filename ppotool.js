@@ -28,7 +28,7 @@ console.log("PPOTool > PPOTool started")
 ppotoolWindow = document.createElement('div');
 ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click on Pokemon to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
-g = () => prompt("Pokemon for custom catchlist");
+g = () => prompt("Add Pokemon to custom catchlist");
 
 n = () => {
     let customList = [...ppotoolWindow.children[0x1].children].map(_0x158ebf => _0x158ebf.textContent);
@@ -39,6 +39,8 @@ n = () => {
     } else {
         pokemonToCatchList = legendaries.concat(extremeRares, veryRares, customList)
     }
+
+    pokemonToCatchList.sort()
 
     n = () => {
         ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
