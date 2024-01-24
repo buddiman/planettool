@@ -1,6 +1,7 @@
 socket = null;
 isElite = false;
 isShiny = false;
+isPaused = false;
 w = [];
 h = null;
 checksums = null
@@ -78,7 +79,7 @@ n = () => {
                     isShiny = false;
                     clearInterval(p);
                 } else {
-                    if (receivedPackageAsString.includes("upkeep")) {
+                    if (receivedPackageAsString.includes("upkeep") && !isPaused) {
                         // TODO: investigate
                         console.log("UPKEEP?!?!")
                         fight();
@@ -87,7 +88,7 @@ n = () => {
 
                 if (receivedPackageAsString.includes("gametype")) { // || y) {
                     isInBattle = true;
-                    if (!fightPackage) {
+                    if (!fightPackage && isPaused) {
                         return;
                     }
 
@@ -152,7 +153,7 @@ n = () => {
                     h = w;
                     x = setInterval(() => {
                         // MOVEMENT HERE!
-                        if (!isInBattle) {
+                        if (!isInBattle && !isPaused) {
                             for (i = 0; i < 4; i++) {
                                 for (j = 0; j < 4; j++) {
                                     let _0x458770 = new Uint8Array(h[j]);
@@ -173,12 +174,19 @@ n = () => {
                     const stopButton = document.createElement('button');
                     stopButton.textContent = 'Stop Bot';
                     stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+                    stopButton.style.backgroundColor  = 'green'
 
                     // Add event listener to the stop button
                     stopButton.addEventListener('click', () => {
-                        clearInterval(x); // Stop the interval
-                        ppotoolWindow.children[0].innerHTML = "Bot stopped. You can now manually control your actions.";
+                        if(!isPaused) {
+                            isPaused = true
+                            stopButton.style.backgroundColor  = 'red'
+                        } else {
+                            isPaused = false
+                            stopButton.style.backgroundColor  = 'green'
+                        }
                     });
+
 
                     // Append the stop button to the ppotoolWindow
                     ppotoolWindow.appendChild(stopButton);
