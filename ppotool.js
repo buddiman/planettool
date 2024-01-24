@@ -1,5 +1,7 @@
 socket = null;
 isElite = false;
+isShiny = false;
+isPaused = false;
 w = [];
 h = null;
 checksums = null
@@ -15,6 +17,9 @@ fight = () => {
     new Uint8Array(fightPackage)[52] = checksums[1];
     new Uint8Array(fightPackage)[53] = checksums[2];
     p = setInterval(() => {
+        if(isPaused) {
+            return
+        }
         socket.send(fightPackage);
     }, 1000);
 };
@@ -58,19 +63,26 @@ n = () => {
                     console.log("POKENAME: " + currentPokemonName)
                 }
 
-                /*
-                if (!receivedPackageAsString.includes("senderName") && receivedPackageAsString.toLowerCase().includes("elite")) {
+
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("ELITE")) {
+                    console.log("ELITE FOUND!")
                     isElite = true;
                 }
-                 */
+
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("SHINY")) {
+                    console.log("SHINY FOUND!")
+                    isShiny = true;
+                }
+
 
                 if (receivedPackageAsString.includes("|win|")) {
                     // Set battle = false. Win battle
                     isInBattle = false;
                     isElite = false;
+                    isShiny = false;
                     clearInterval(p);
                 } else {
-                    if (receivedPackageAsString.includes("upkeep")) {
+                    if (receivedPackageAsString.includes("upkeep") && !isPaused) {
                         // TODO: investigate
                         console.log("UPKEEP?!?!")
                         fight();
@@ -79,7 +91,7 @@ n = () => {
 
                 if (receivedPackageAsString.includes("gametype")) { // || y) {
                     isInBattle = true;
-                    if (!fightPackage) {
+                    if (!fightPackage && isPaused) {
                         return;
                     }
 
@@ -97,14 +109,22 @@ n = () => {
                         }
                     }
 
-                    if (pokemonToCatchList.includes(currentPokemonName)) {
+                    if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
+                        let pokemonName = ""
+                        if(isElite) {
+                            pokemonName += "ELITE "
+                        }
+                        if(isShiny) {
+                            pokemonName += "SHINY "
+                        }
+                        pokemonName += currentPokemonName
                         fetch(discord[0], {
                             'method': "post",
                             'headers': {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '<@' + discord[1] + "> we got " + currentPokemonName + '!',
+                                'content': '<@' + discord[1] + "> we got " + pokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
@@ -120,6 +140,9 @@ n = () => {
         };
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (origPackage) {
+            if(origPackage == null) {
+                return
+            }
             // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
             if (origPackage.byteLength == 79 && !fightPackage) {
                 fightPackage = origPackage;
@@ -136,7 +159,7 @@ n = () => {
                     h = w;
                     x = setInterval(() => {
                         // MOVEMENT HERE!
-                        if (!isInBattle) {
+                        if (!isInBattle && !isPaused) {
                             for (i = 0; i < 4; i++) {
                                 for (j = 0; j < 4; j++) {
                                     let _0x458770 = new Uint8Array(h[j]);
@@ -155,14 +178,23 @@ n = () => {
 
                     // Create a stop button dynamically
                     const stopButton = document.createElement('button');
-                    stopButton.textContent = 'Stop Bot';
+                    stopButton.textContent = 'Bot is running... Stop Bot!';
                     stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+                    stopButton.style.backgroundColor  = 'green'
 
                     // Add event listener to the stop button
                     stopButton.addEventListener('click', () => {
-                        clearInterval(x); // Stop the interval
-                        ppotoolWindow.children[0].innerHTML = "Bot stopped. You can now manually control your actions.";
+                        if(!isPaused) {
+                            isPaused = true
+                            stopButton.style.backgroundColor  = 'red'
+                            stopButton.textContent = 'Bot is NOT running... Restart Bot!'
+                        } else {
+                            isPaused = false
+                            stopButton.style.backgroundColor  = 'green'
+                            stopButton.textContent = 'Bot is running... Stop Bot!'
+                        }
                     });
+
 
                     // Append the stop button to the ppotoolWindow
                     ppotoolWindow.appendChild(stopButton);
