@@ -36,8 +36,6 @@ let isInBattle = false;
 let fightPackage = null;
 let currentPokemonName = '';
 let p = null;
-let n = 0x1;
-let y = false;
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
