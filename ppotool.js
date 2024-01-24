@@ -17,6 +17,9 @@ fight = () => {
     new Uint8Array(fightPackage)[52] = checksums[1];
     new Uint8Array(fightPackage)[53] = checksums[2];
     p = setInterval(() => {
+        if(isPaused) {
+            return
+        }
         socket.send(fightPackage);
     }, 1000);
 };
