@@ -172,7 +172,7 @@ n = () => {
 
                     // Create a stop button dynamically
                     const stopButton = document.createElement('button');
-                    stopButton.textContent = 'Stop Bot';
+                    stopButton.textContent = 'Bot is running... Stop Bot!';
                     stopButton.style.marginTop = '10px'; // Add some margin for better visibility
                     stopButton.style.backgroundColor  = 'green'
 
@@ -181,9 +181,11 @@ n = () => {
                         if(!isPaused) {
                             isPaused = true
                             stopButton.style.backgroundColor  = 'red'
+                            stopButton.textContent = 'Bot is NOT running... Restart Bot!'
                         } else {
                             isPaused = false
                             stopButton.style.backgroundColor  = 'green'
+                            stopButton.textContent = 'Bot is running... Stop Bot!'
                         }
                     });
 
