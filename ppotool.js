@@ -184,6 +184,39 @@ n = () => {
                         selectBox.appendChild(optionElement);
                     });
 
+                    // Create a button to remove the selected Pokémon
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = 'Remove Pokémon';
+                    removeButton.style.marginTop = '5px'; // Add some margin for better visibility
+                    removeButton.addEventListener('click', () => {
+                        const selectedPokemon = selectBox.value;
+                        const index = pokemonToCatchList.indexOf(selectedPokemon);
+                        if (index !== -1) {
+                            // Remove the selected Pokémon from the array
+                            pokemonToCatchList.splice(index, 1);
+
+                            // Update the select box options
+                            updateSelectBoxOptions();
+                        }
+                    });
+
+                    // Create a button to add a Pokémon using a dialog prompt
+                    const addButton = document.createElement('button');
+                    addButton.textContent = 'Add Pokémon';
+                    addButton.style.marginTop = '5px'; // Add some margin for better visibility
+                    addButton.addEventListener('click', () => {
+                        // Show a dialog prompt to add a Pokémon
+                        const newPokemon = prompt('Enter the name of the Pokémon to add:');
+                        if (newPokemon && !pokemonToCatchList.includes(newPokemon)) {
+                            // Add the new Pokémon to the array
+                            pokemonToCatchList.push(newPokemon);
+                            pokemonToCatchList.sort()
+
+                            // Update the select box options
+                            updateSelectBoxOptions();
+                        }
+                    });
+
 
                     // Create a stop button dynamically
                     const stopButton = document.createElement('button');
@@ -208,6 +241,22 @@ n = () => {
                     // Append the stop button to the ppotoolWindow
                     ppotoolWindow.appendChild(stopButton);
                     ppotoolWindow.appendChild(selectBox);
+                    ppotoolWindow.appendChild(removeButton);
+                    ppotoolWindow.appendChild(addButton);
+
+
+                    function updateSelectBoxOptions() {
+                        // Clear existing options
+                        selectBox.innerHTML = '';
+
+                        // Populate the select box with updated options
+                        pokemonToCatchList.forEach(pokemonName => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = pokemonName;
+                            optionElement.textContent = pokemonName;
+                            selectBox.appendChild(optionElement);
+                        });
+                    }
                 }
             }
             if (!socket) {
