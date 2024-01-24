@@ -60,12 +60,12 @@ n = () => {
                 }
 
 
-                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.toLowerCase().includes("ELITE")) {
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("ELITE")) {
                     console.log("ELITE FOUND!")
                     isElite = true;
                 }
 
-                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.toLowerCase().includes("SHINY")) {
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("SHINY")) {
                     console.log("SHINY FOUND!")
                     isShiny = true;
                 }
