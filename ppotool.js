@@ -109,7 +109,7 @@ n = () => {
                         }
                     }
 
-                    if (pokemonToCatchList.includes(currentPokemonName) || isElite) {
+                    if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                         let pokemonName = ""
                         if(isElite) {
                             pokemonName += "ELITE "
