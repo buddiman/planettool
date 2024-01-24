@@ -1,5 +1,6 @@
 socket = null;
 isElite = false;
+isShiny = false;
 w = [];
 h = null;
 checksums = null
@@ -58,16 +59,23 @@ n = () => {
                     console.log("POKENAME: " + currentPokemonName)
                 }
 
-                /*
-                if (!receivedPackageAsString.includes("senderName") && receivedPackageAsString.toLowerCase().includes("elite")) {
+
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.toLowerCase().includes("ELITE")) {
+                    console.log("ELITE FOUND!")
                     isElite = true;
                 }
-                 */
+
+                if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.toLowerCase().includes("SHINY")) {
+                    console.log("SHINY FOUND!")
+                    isShiny = true;
+                }
+
 
                 if (receivedPackageAsString.includes("|win|")) {
                     // Set battle = false. Win battle
                     isInBattle = false;
                     isElite = false;
+                    isShiny = false;
                     clearInterval(p);
                 } else {
                     if (receivedPackageAsString.includes("upkeep")) {
@@ -97,14 +105,22 @@ n = () => {
                         }
                     }
 
-                    if (pokemonToCatchList.includes(currentPokemonName)) {
+                    if (pokemonToCatchList.includes(currentPokemonName) || isElite) {
+                        let pokemonName = ""
+                        if(isElite) {
+                            pokemonName += "ELITE "
+                        }
+                        if(isShiny) {
+                            pokemonName += "SHINY "
+                        }
+                        pokemonName += currentPokemonName
                         fetch(discord[0], {
                             'method': "post",
                             'headers': {
                                 'Content-Type': "application/json"
                             },
                             'body': JSON.stringify({
-                                'content': '<@' + discord[1] + "> we got " + currentPokemonName + '!',
+                                'content': '<@' + discord[1] + "> we got " + pokemonName + '!',
                                 'allowed_mentions': {
                                     'parse': ["users"]
                                 }
