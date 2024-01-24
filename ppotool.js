@@ -172,6 +172,17 @@ n = () => {
                         }
                     }, 400);
 
+                    const pokemonCatchListElement = document.createElement('ul')
+                    pokemonToCatchList.forEach(pokemonName => {
+                        const listItemElement = document.createElement('li');
+
+                        // Set the text content of the list item to the Pokemon name
+                        listItemElement.textContent = pokemonName;
+
+                        // Append the list item to the unordered list
+                        pokemonCatchListElement.appendChild(listItemElement);
+                    })
+
                     // Create a stop button dynamically
                     const stopButton = document.createElement('button');
                     stopButton.textContent = 'Bot is running... Stop Bot!';
@@ -194,6 +205,7 @@ n = () => {
 
                     // Append the stop button to the ppotoolWindow
                     ppotoolWindow.appendChild(stopButton);
+                    ppotoolWindow.appendChild(pokemonCatchListElement)
                 }
             }
             if (!socket) {
