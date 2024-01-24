@@ -44,7 +44,7 @@ fight = () => {
 
 console.log("PPOTool > PPOTool started")
 ppotoolWindow = document.createElement('div');
-ppotoolWindow.className = "position-absolute left-0 top-0 h-40 w-25 bg-light opacity-70 d-flex flex-column font-family-trebuchet-ms";
+ppotoolWindow.className = "position-fixed top-0 left-0 h-100 w-25 bg-light opacity-70 d-flex flex-column font-family-trebuchet-ms";
 ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click on Pokemon to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
 
 //ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
