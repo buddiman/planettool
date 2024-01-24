@@ -37,7 +37,7 @@ n = () => {
     if(customList.length === 0) {
         pokemonToCatchList = legendaries.concat(extremeRares, veryRares)
     } else {
-        pokemonToCatchList = customList
+        pokemonToCatchList = legendaries.concat(extremeRares, veryRares, customList)
     }
 
     n = () => {
