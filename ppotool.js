@@ -1,3 +1,21 @@
+// Dynamically add Bootstrap CSS and JS to the page
+const bootstrapCss = document.createElement('link');
+bootstrapCss.rel = 'stylesheet';
+bootstrapCss.href = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+document.head.appendChild(bootstrapCss);
+
+const jqueryScript = document.createElement('script');
+jqueryScript.src = 'https://code.jquery.com/jquery-3.5.1.slim.min.js';
+document.head.appendChild(jqueryScript);
+
+const popperScript = document.createElement('script');
+popperScript.src = 'https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js';
+document.head.appendChild(popperScript);
+
+const bootstrapJs = document.createElement('script');
+bootstrapJs.src = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js';
+document.head.appendChild(bootstrapJs);
+
 socket = null;
 isElite = false;
 isShiny = false;
@@ -26,8 +44,11 @@ fight = () => {
 
 console.log("PPOTool > PPOTool started")
 ppotoolWindow = document.createElement('div');
-ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+ppotoolWindow.className = "position-absolute left-0 top-0 h-40 w-25 bg-light opacity-70 d-flex flex-column font-family-trebuchet-ms";
 ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click on Pokemon to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
+
+//ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+//ppotoolWindow.innerHTML = "<h2>Mons to hunt</h2><div></div><button onclick=\"ppotoolWindow.children[1].innerHTML+=`<a href='javascript:void(0)' onclick='this.remove()'>`+g()+`<br></a>`\">Add (click on Pokemon to remove)</button><button style=\"margin-top:auto\" onclick=\"n()\">Next</button>";
 g = () => prompt("Add Pokemon to custom catchlist");
 
 n = () => {
