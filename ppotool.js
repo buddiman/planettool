@@ -61,7 +61,7 @@ ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;backg
 ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div><button style=\"margin-top:auto\" id=\"nextButton\">Next</button>";
 
 // Add an event listener to the 'Next' button
-document.getElementById('nextButton').addEventListener('click', initializeTool);
+//document.getElementById('nextButton').addEventListener('click', initializeTool);
 function initializeTool() {
     ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
     const z = _0xbee556 => {
