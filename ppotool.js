@@ -69,7 +69,41 @@ function initializeTool() {
         webSocketReader.addEventListener("loadend", () => {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
-            // ... (rest of the 'z' function)
+            let _0x18c87c = (receivedPackageAsString.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
+            if (receivedPackageAsString.includes("gametype")) {
+                const match = receivedPackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
+                currentPokemonName = match ? match[1] : null
+                if (!currentPokemonName) {
+                    console.log("No pokemon name found. ERROR!")
+                }
+                console.log("POKENAME: " + currentPokemonName)
+            }
+
+
+            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("ELITE")) {
+                console.log("ELITE FOUND!")
+                isElite = true;
+            }
+
+            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("SHINY")) {
+                console.log("SHINY FOUND!")
+                isShiny = true;
+            }
+
+
+            if (receivedPackageAsString.includes("|win|")) {
+                // Set battle = false. Win battle
+                isInBattle = false;
+                isElite = false;
+                isShiny = false;
+                clearInterval(p);
+            } else {
+                if (receivedPackageAsString.includes("upkeep") && !isPaused) {
+                    // TODO: investigate
+                    console.log("UPKEEP?!?!")
+                    fight();
+                }
+            }
 
             if (receivedPackageAsString.includes("gametype")) {
                 isInBattle = true;
@@ -77,7 +111,19 @@ function initializeTool() {
                     return;
                 }
 
-                // ... (rest of the 'z' function)
+                // Sequence to find ("result")
+                const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
+
+                for (let i = 0; i < receivedPackage.length; i++) {
+                    // Check if the current position matches the start of the sequence
+                    if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+                        i += sequenceToFind.length;
+
+                        const extractedBytes = receivedPackage.subarray(i + 5, i + 8);
+                        checksums = Array.from(extractedBytes);
+                        break;
+                    }
+                }
 
                 if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                     let pokemonName = "";
@@ -117,7 +163,121 @@ function initializeTool() {
             fightPackage = origPackage;
         }
 
-        // ... (rest of the WebSocket.prototype.send modification)
+        // 0x91 = 145
+        if (origPackage.byteLength == 145 && !h) {
+            w.push(origPackage);
+            if (w.length == 2) {
+                ppotoolWindow.children[0].innerHTML = "Walk backwards";
+            }
+            if (w.length == 4) {
+                ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. Refresh page to stop the bot. Happy hunting!";
+                h = w;
+                x = setInterval(() => {
+                    // MOVEMENT HERE!
+                    if (!isInBattle && !isPaused) {
+                        for (i = 0; i < 4; i++) {
+                            for (j = 0; j < 4; j++) {
+                                let _0x458770 = new Uint8Array(h[j]);
+                                _0x458770[0x45]++;
+                                if (_0x458770[69] == 0) {
+                                    _0x458770[68]++;
+                                }
+                                if (i % 2 > 0) {
+                                    _0x458770[84]++;
+                                }
+                            }
+                            socket.send(h[i]);
+                        }
+                    }
+                }, 400);
+
+                // Create a selectable textbox dynamically
+                const selectBox = document.createElement('select');
+                selectBox.style.marginTop = '10px'; // Add some margin for better visibility
+
+                // Populate the select box with options from pokemonToCatchList
+                pokemonToCatchList.forEach(pokemonName => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = pokemonName;
+                    optionElement.textContent = pokemonName;
+                    selectBox.appendChild(optionElement);
+                });
+
+                // Create a button to remove the selected Pokémon
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove Pokémon';
+                removeButton.style.marginTop = '5px'; // Add some margin for better visibility
+                removeButton.addEventListener('click', () => {
+                    const selectedPokemon = selectBox.value;
+                    const index = pokemonToCatchList.indexOf(selectedPokemon);
+                    if (index !== -1) {
+                        // Remove the selected Pokémon from the array
+                        pokemonToCatchList.splice(index, 1);
+
+                        // Update the select box options
+                        updateSelectBoxOptions();
+                    }
+                });
+
+                // Create a button to add a Pokémon using a dialog prompt
+                const addButton = document.createElement('button');
+                addButton.textContent = 'Add Pokémon';
+                addButton.style.marginTop = '5px'; // Add some margin for better visibility
+                addButton.addEventListener('click', () => {
+                    // Show a dialog prompt to add a Pokémon
+                    const newPokemon = prompt('Enter the name of the Pokémon to add:');
+                    if (newPokemon && !pokemonToCatchList.includes(newPokemon)) {
+                        // Add the new Pokémon to the array
+                        pokemonToCatchList.push(newPokemon);
+                        pokemonToCatchList.sort()
+
+                        // Update the select box options
+                        updateSelectBoxOptions();
+                    }
+                });
+
+
+                // Create a stop button dynamically
+                const stopButton = document.createElement('button');
+                stopButton.textContent = 'Bot is running... Stop Bot!';
+                stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+                stopButton.style.backgroundColor = 'green'
+
+                // Add event listener to the stop button
+                stopButton.addEventListener('click', () => {
+                    if (!isPaused) {
+                        isPaused = true
+                        stopButton.style.backgroundColor = 'red'
+                        stopButton.textContent = 'Bot is NOT running... Restart Bot!'
+                    } else {
+                        isPaused = false
+                        stopButton.style.backgroundColor = 'green'
+                        stopButton.textContent = 'Bot is running... Stop Bot!'
+                    }
+                });
+
+
+                // Append the stop button to the ppotoolWindow
+                ppotoolWindow.appendChild(stopButton);
+                ppotoolWindow.appendChild(selectBox);
+                ppotoolWindow.appendChild(removeButton);
+                ppotoolWindow.appendChild(addButton);
+
+
+                function updateSelectBoxOptions() {
+                    // Clear existing options
+                    selectBox.innerHTML = '';
+
+                    // Populate the select box with updated options
+                    pokemonToCatchList.forEach(pokemonName => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = pokemonName;
+                        optionElement.textContent = pokemonName;
+                        selectBox.appendChild(optionElement);
+                    });
+                }
+            }
+        }
 
         if (!socket) {
             socket = this;
