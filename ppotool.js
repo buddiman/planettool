@@ -1,23 +1,20 @@
-// Dynamically add jQuery to the page
+// Dynamically add Bootstrap CSS and JS to the page
+const bootstrapCss = document.createElement('link');
+bootstrapCss.rel = 'stylesheet';
+bootstrapCss.href = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+document.head.appendChild(bootstrapCss);
+
 const jqueryScript = document.createElement('script');
 jqueryScript.src = 'https://code.jquery.com/jquery-3.5.1.slim.min.js';
 document.head.appendChild(jqueryScript);
 
-// Wait for jQuery to load, then add Bootstrap CSS and JS
-jqueryScript.onload = function () {
-    const bootstrapCss = document.createElement('link');
-    bootstrapCss.rel = 'stylesheet';
-    bootstrapCss.href = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
-    document.head.appendChild(bootstrapCss);
+const popperScript = document.createElement('script');
+popperScript.src = 'https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js';
+document.head.appendChild(popperScript);
 
-    const popperScript = document.createElement('script');
-    popperScript.src = 'https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js';
-    document.head.appendChild(popperScript);
-
-    const bootstrapJs = document.createElement('script');
-    bootstrapJs.src = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js';
-    document.head.appendChild(bootstrapJs);
-}
+const bootstrapJs = document.createElement('script');
+bootstrapJs.src = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js';
+document.head.appendChild(bootstrapJs);
 
 socket = null;
 isElite = false;
