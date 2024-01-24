@@ -140,6 +140,9 @@ n = () => {
         };
         const _0x530e22 = WebSocket.prototype.send;
         WebSocket.prototype.send = function (origPackage) {
+            if(origPackage == null) {
+                return
+            }
             // Possible check -> 79 / 23 -> Prob. 23, only infight, 79 when using a move!
             if (origPackage.byteLength == 79 && !fightPackage) {
                 fightPackage = origPackage;
