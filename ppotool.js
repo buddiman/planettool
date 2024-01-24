@@ -6,7 +6,7 @@ function loadScript(url, callback){
     document.head.appendChild(script);
 }
 
-loadScript('https://raw.githubusercontent.com/buddiman/planettool/main/pokemon-data.js', function(){});
+loadScript('https://raw.githubusercontent.com/buddiman/planettool/main/pokemonData.js', function(){});
 
 let socket = null;
 let isElite = false;
