@@ -58,18 +58,16 @@ function fight() {
 console.log("PPOTool > PPOTool started");
 const ppotoolWindow = document.createElement('div');
 ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.7);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
-ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div><button style=\"margin-top:auto\" id=\"nextButton\">Next</button>";
+ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
+    "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
 
-// Add an event listener to the 'Next' button
-//document.getElementById('nextButton').addEventListener('click', initializeTool);
 function initializeTool() {
-    ppotoolWindow.innerHTML = "<h2>Take a step</h2>";
+    ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
     const z = _0xbee556 => {
         let webSocketReader = new FileReader();
         webSocketReader.addEventListener("loadend", () => {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
-            let _0x18c87c = (receivedPackageAsString.split("\b\0") ?? []).map(_0x55f493 => _0x55f493.split("\0")[0].slice(1));
             if (receivedPackageAsString.includes("gametype")) {
                 const match = receivedPackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
                 currentPokemonName = match ? match[1] : null
@@ -99,7 +97,7 @@ function initializeTool() {
                 clearInterval(p);
             } else {
                 if (receivedPackageAsString.includes("upkeep") && !isPaused) {
-                    // TODO: investigate
+                    // Is called when a action in battle is executed but the fight is not finished
                     console.log("UPKEEP?!?!")
                     fight();
                 }
@@ -115,7 +113,6 @@ function initializeTool() {
                 const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
 
                 for (let i = 0; i < receivedPackage.length; i++) {
-                    // Check if the current position matches the start of the sequence
                     if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
                         i += sequenceToFind.length;
 
@@ -154,7 +151,7 @@ function initializeTool() {
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
     };
 
-    const _0x530e22 = WebSocket.prototype.send;
+    const webSocketSend = WebSocket.prototype.send;
     WebSocket.prototype.send = function (origPackage) {
         if (origPackage == null) {
             return;
@@ -167,10 +164,10 @@ function initializeTool() {
         if (origPackage.byteLength == 145 && !h) {
             w.push(origPackage);
             if (w.length == 2) {
-                ppotoolWindow.children[0].innerHTML = "Walk backwards";
+                ppotoolWindow.children[0].innerHTML = "Take a step in the opposite direction";
             }
             if (w.length == 4) {
-                ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. Refresh page to stop the bot. Happy hunting!";
+                ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
                 x = setInterval(() => {
                     // MOVEMENT HERE!
@@ -283,19 +280,15 @@ function initializeTool() {
             socket = this;
             socket.addEventListener("message", z);
         }
-        _0x530e22.call(this, origPackage);
+        webSocketSend.call(this, origPackage);
     };
 }
 
-// Initial call to initializeTool
-// initializeTool();
-
-// Create a button for the 'Next' action
 const nextButton = document.createElement('button');
 nextButton.textContent = 'Next';
 nextButton.addEventListener('click', initializeTool);
 
-// Append the 'Next' button to the ppotoolWindow
+
 ppotoolWindow.appendChild(nextButton);
 
 document.body.appendChild(ppotoolWindow);
