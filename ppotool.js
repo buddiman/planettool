@@ -67,6 +67,8 @@ function runAway() {
     runAwayPackage.set(fightPackageEnd, 54)
     runAwayPackage.set(runPackage, 72)
 
+    runAwayPackage[2] = 0x49
+
     console.log("Run Away Package: " + runAwayPackage)
 
 
@@ -75,7 +77,7 @@ function runAway() {
             return;
         }
         socket.send(runAwayPackage);
-    }, 10000);
+    }, 1000);
 }
 
 console.log("PPOTool > PPOTool started");
