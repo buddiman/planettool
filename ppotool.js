@@ -34,8 +34,12 @@ let h = null;
 let checksums = null;
 let isInBattle = false;
 let fightPackage = null;
+let fightPackageBegin = null;
+let fightPackageEnd = null
 let currentPokemonName = '';
 let p = null;
+let shouldRunOnElite = false;
+let runPackage = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
@@ -53,9 +57,28 @@ function fight() {
     }, 1000);
 }
 
+function runAway() {
+    clearTimeout(p);
+    const totalLength = fightPackageBegin.length + fightPackageEnd.length + runPackage.length + 3;
+    const runAwayPackage = new Uint8Array(totalLength)
+
+    runAwayPackage.set(fightPackageBegin, 0)
+    runAwayPackage.set(checksums, fightPackageBegin.length)
+    runAwayPackage.set(fightPackageEnd, fightPackageBegin.length + 3)
+    runAwayPackage.set(runPackage, totalLength - 3)
+
+
+    p = setInterval(() => {
+        if (isPaused) {
+            return;
+        }
+        socket.send(runAwayPackage);
+    }, 1000);
+}
+
 console.log("PPOTool > PPOTool started");
 const ppotoolWindow = document.createElement('div');
-ppotoolWindow.style = "position:absolute;left:0;top:0;height:40%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
 ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
     "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
 
@@ -141,6 +164,10 @@ function initializeTool() {
                             }
                         })
                     });
+                    if(shouldRunOnElite) {
+                        runAway()
+                        console.log("Successfully ran away from Elite!")
+                    }
                     return;
                 }
                 fight();
@@ -156,6 +183,8 @@ function initializeTool() {
         }
         if (origPackage.byteLength === 79 && !fightPackage) {
             fightPackage = origPackage;
+            fightPackageBegin = new Uint8Array(origPackage.slice(0, 51))
+            fightPackageEnd = new Uint8Array(origPackage.slice(54, 72))
         }
 
         // 0x91 = 145
@@ -251,11 +280,32 @@ function initializeTool() {
                     }
                 });
 
+                // Create a checkbox element
+                const runOnEliteCheckbox = document.createElement('input');
+                runOnEliteCheckbox.type = 'checkbox';
+
+                const runOnEliteCheckboxLabel = document.createElement('label');
+                runOnEliteCheckboxLabel.textContent = 'Run on all ELITES?';
+
+                runOnEliteCheckbox.style.marginTop = '10px';
+                runOnEliteCheckbox.style.marginRight = '5px';
+                runOnEliteCheckboxLabel.style.marginTop = '10px';
+
+                runOnEliteCheckbox.addEventListener('change', function() {
+                    // Update the global variable based on the checkbox state
+                    shouldRunOnElite = runOnEliteCheckbox.checked;
+
+                    // Perform any actions with the updated value
+                    console.log('Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
+                });
+
                 // Append the stop button to the ppotoolWindow
                 ppotoolWindow.appendChild(stopButton);
                 ppotoolWindow.appendChild(selectBox);
                 ppotoolWindow.appendChild(removeButton);
                 ppotoolWindow.appendChild(addButton);
+                ppotoolWindow.appendChild(runOnEliteCheckbox);
+                ppotoolWindow.appendChild(runOnEliteCheckboxLabel);
 
 
                 function updateSelectBoxOptions() {
