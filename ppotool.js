@@ -65,7 +65,7 @@ function runAway() {
     runAwayPackage.set(fightPackageBegin, 0)
     runAwayPackage.set(checksums, fightPackageBegin.length)
     runAwayPackage.set(fightPackageEnd, fightPackageBegin.length + 3)
-    runAwayPackage.set(runPackage, totalLength - 3)
+    runAwayPackage.set(runPackage, totalLength - 4)
 
 
     p = setInterval(() => {
