@@ -264,7 +264,7 @@ function initializeTool() {
 
 
                 const encounterRateTextbox = document.createElement('input');
-                encounterRateTextbox.type = 'number';
+                encounterRateTextbox.type = 'text';
                 encounterRateTextbox.placeholder = '0';
 
                 encounterRateTextbox.style.marginTop = '10px';
