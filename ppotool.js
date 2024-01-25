@@ -36,8 +36,6 @@ let isInBattle = false;
 let fightPackage = null;
 let currentPokemonName = '';
 let p = null;
-let encounterRateTimeout = 400;
-let encounterRateLoop = 4;
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
@@ -172,7 +170,7 @@ function initializeTool() {
                 x = setInterval(() => {
                     // MOVEMENT HERE!
                     if (!isInBattle && !isPaused) {
-                        for (i = 0; i < encounterRateTimeout / 100; i++) {
+                        for (i = 0; i < 4; i++) {
                             for (j = 0; j < 4; j++) {
                                 let _0x458770 = new Uint8Array(h[j]);
                                 _0x458770[0x45]++;
@@ -183,12 +181,10 @@ function initializeTool() {
                                     _0x458770[84]++;
                                 }
                             }
-
                             socket.send(h[i]);
-
                         }
                     }
-                }, encounterRateTimeout);
+                }, 400);
 
                 // Create a selectable textbox dynamically
                 const selectBox = document.createElement('select');
@@ -256,7 +252,7 @@ function initializeTool() {
                 });
 
                 const encounterRateTextboxLabel = document.createElement('label');
-                encounterRateTextboxLabel.textContent = 'Encounter rate delay in ms (ONLY strg-v!):';
+                encounterRateTextboxLabel.textContent = 'Encounter rate delay in ms:';
                 encounterRateTextboxLabel.style.display = 'block';  // Make the label a block element
                 encounterRateTextboxLabel.style.marginTop = '10px';
                 const encounterRateTextboxId = 'encounterRateTextboxId';  // Set a unique id for the textbox
@@ -264,8 +260,8 @@ function initializeTool() {
 
 
                 const encounterRateTextbox = document.createElement('input');
-                encounterRateTextbox.type = 'text';
-                encounterRateTextbox.placeholder = encounterRateTimeout;
+                encounterRateTextbox.type = 'number';
+                encounterRateTextbox.placeholder = '0';
 
                 encounterRateTextbox.style.marginTop = '10px';
                 encounterRateTextbox.style.padding = '5px';
@@ -276,28 +272,13 @@ function initializeTool() {
                     encounterRateTimeout = parseInt(encounterRateTextbox.value, 10)
                 });
 
-                const encounterRateLoopBox = document.createElement('input');
-                encounterRateLoopBox.type = 'text';
-                encounterRateLoopBox.placeholder = "4";
-
-                encounterRateLoopBox.style.marginTop = '10px';
-                encounterRateLoopBox.style.padding = '5px';
-
-                encounterRateLoopBox.addEventListener('input', function() {
-                    encounterRateLoopBox.value = encounterRateLoopBox.value.replace(/[^0-9]/g, '')
-                    encounterRateLoop = parseInt(encounterRateLoopBox.value, 10)
-                });
-
-
 
                 // Append the stop button to the ppotoolWindow
                 ppotoolWindow.appendChild(stopButton);
                 ppotoolWindow.appendChild(selectBox);
                 ppotoolWindow.appendChild(removeButton);
                 ppotoolWindow.appendChild(addButton);
-                ppotoolWindow.appendChild(encounterRateTextboxLabel)
-                ppotoolWindow.appendChild(encounterRateTextbox);
-                ppotoolWindow.appendChild(encounterRateLoopBox)
+                document.body.appendChild(encounterRateTextbox);
 
 
                 function updateSelectBoxOptions() {
