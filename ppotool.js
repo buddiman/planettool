@@ -36,6 +36,7 @@ let isInBattle = false;
 let fightPackage = null;
 let currentPokemonName = '';
 let p = null;
+let encounterRateTimeout = 0;
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
@@ -181,7 +182,10 @@ function initializeTool() {
                                     _0x458770[84]++;
                                 }
                             }
-                            socket.send(h[i]);
+                            setTimeout(function() {
+                                socket.send(h[i]);
+                            }, encounterRateTimeout);
+
                         }
                     }
                 }, 400);
@@ -251,12 +255,34 @@ function initializeTool() {
                     }
                 });
 
+                const encounterRateTextboxLabel = document.createElement('label');
+                encounterRateTextboxLabel.textContent = 'Encounter rate delay in ms:';
+                encounterRateTextboxLabel.style.display = 'block';  // Make the label a block element
+                encounterRateTextboxLabel.style.marginTop = '10px';
+                const encounterRateTextboxId = 'encounterRateTextboxId';  // Set a unique id for the textbox
+                encounterRateTextboxLabel.setAttribute('for', encounterRateTextboxId);
+
+
+                const encounterRateTextbox = document.createElement('input');
+                encounterRateTextbox.type = 'number';
+                encounterRateTextbox.placeholder = '0';
+
+                encounterRateTextbox.style.marginTop = '10px';
+                encounterRateTextbox.style.padding = '5px';
+                encounterRateTextbox.id = encounterRateTextboxId;
+
+                encounterRateTextbox.addEventListener('input', function() {
+                    encounterRateTextbox.value = encounterRateTextbox.value.replace(/[^0-9]/g, '')
+                    encounterRateTimeout = parseInt(encounterRateTextbox.value, 10)
+                });
+
 
                 // Append the stop button to the ppotoolWindow
                 ppotoolWindow.appendChild(stopButton);
                 ppotoolWindow.appendChild(selectBox);
                 ppotoolWindow.appendChild(removeButton);
                 ppotoolWindow.appendChild(addButton);
+                document.body.appendChild(encounterRateTextbox);
 
 
                 function updateSelectBoxOptions() {
