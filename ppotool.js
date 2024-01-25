@@ -282,7 +282,8 @@ function initializeTool() {
                 ppotoolWindow.appendChild(selectBox);
                 ppotoolWindow.appendChild(removeButton);
                 ppotoolWindow.appendChild(addButton);
-                document.body.appendChild(encounterRateTextbox);
+                ppotoolWindow.appendChild(encounterRateTextboxLabel)
+                ppotoolWindow.appendChild(encounterRateTextbox);
 
 
                 function updateSelectBoxOptions() {
