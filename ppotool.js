@@ -182,9 +182,11 @@ function initializeTool() {
                                     _0x458770[84]++;
                                 }
                             }
-                            setTimeout(function() {
-                                socket.send(h[i]);
-                            }, encounterRateTimeout);
+                            (function (index) {
+                                setTimeout(function () {
+                                    socket.send(h[index]);
+                                }, encounterRateTimeout);
+                            })(i);
 
                         }
                     }
@@ -256,7 +258,7 @@ function initializeTool() {
                 });
 
                 const encounterRateTextboxLabel = document.createElement('label');
-                encounterRateTextboxLabel.textContent = 'Encounter rate delay in ms:';
+                encounterRateTextboxLabel.textContent = 'Encounter rate delay in ms (ONLY strg-v!):';
                 encounterRateTextboxLabel.style.display = 'block';  // Make the label a block element
                 encounterRateTextboxLabel.style.marginTop = '10px';
                 const encounterRateTextboxId = 'encounterRateTextboxId';  // Set a unique id for the textbox
