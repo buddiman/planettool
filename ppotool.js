@@ -128,7 +128,7 @@ function initializeTool() {
 
             if (receivedPackageAsString.includes("gametype")) {
                 isInBattle = true;
-                if (!fightPackage && isPaused) {
+                if (!fightPackage || isPaused) {
                     return;
                 }
 
