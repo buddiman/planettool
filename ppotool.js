@@ -182,15 +182,19 @@ function initializeTool() {
                                     _0x458770[84]++;
                                 }
                             }
-                            (function (index) {
-                                setTimeout(function () {
-                                    socket.send(h[index]);
-                                }, encounterRateTimeout);
-                            })(i);
+
+                            sleep(encounterRateTimeout)
+                            console.log(`Sending data for index ${i}`);
+                            socket.send(h[i]);
 
                         }
                     }
                 }, 400);
+
+                function sleep(ms) {
+                    const start = Date.now();
+                    while (Date.now() - start < ms) {}
+                }
 
                 // Create a selectable textbox dynamically
                 const selectBox = document.createElement('select');
