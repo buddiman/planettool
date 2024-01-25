@@ -37,6 +37,7 @@ let fightPackage = null;
 let currentPokemonName = '';
 let p = null;
 let encounterRateTimeout = 400;
+let encounterRateLoop = 4;
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
@@ -168,10 +169,10 @@ function initializeTool() {
             if (w.length === 4) {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
-                x = setInterval(async () => {
+                x = setInterval(() => {
                     // MOVEMENT HERE!
                     if (!isInBattle && !isPaused) {
-                        for (i = 0; i < 4; i++) {
+                        for (i = 0; i < encounterRateTimeout / 100; i++) {
                             for (j = 0; j < 4; j++) {
                                 let _0x458770 = new Uint8Array(h[j]);
                                 _0x458770[0x45]++;
@@ -275,6 +276,19 @@ function initializeTool() {
                     encounterRateTimeout = parseInt(encounterRateTextbox.value, 10)
                 });
 
+                const encounterRateLoopBox = document.createElement('input');
+                encounterRateLoopBox.type = 'text';
+                encounterRateLoopBox.placeholder = "4";
+
+                encounterRateLoopBox.style.marginTop = '10px';
+                encounterRateLoopBox.style.padding = '5px';
+
+                encounterRateLoopBox.addEventListener('input', function() {
+                    encounterRateLoopBox.value = encounterRateLoopBox.value.replace(/[^0-9]/g, '')
+                    encounterRateLoop = parseInt(encounterRateLoopBox.value, 10)
+                });
+
+
 
                 // Append the stop button to the ppotoolWindow
                 ppotoolWindow.appendChild(stopButton);
@@ -283,6 +297,7 @@ function initializeTool() {
                 ppotoolWindow.appendChild(addButton);
                 ppotoolWindow.appendChild(encounterRateTextboxLabel)
                 ppotoolWindow.appendChild(encounterRateTextbox);
+                ppotoolWindow.appendChild(encounterRateLoopBox)
 
 
                 function updateSelectBoxOptions() {
