@@ -168,7 +168,7 @@ function initializeTool() {
             if (w.length === 4) {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
-                x = setInterval(() => {
+                x = setInterval(async () => {
                     // MOVEMENT HERE!
                     if (!isInBattle && !isPaused) {
                         for (i = 0; i < 4; i++) {
@@ -183,7 +183,7 @@ function initializeTool() {
                                 }
                             }
 
-                            sleep(encounterRateTimeout)
+                            await delay(encounterRateTimeout)
                             console.log(`Sending data for index ${i}`);
                             socket.send(h[i]);
 
@@ -191,9 +191,8 @@ function initializeTool() {
                     }
                 }, 400);
 
-                function sleep(ms) {
-                    const start = Date.now();
-                    while (Date.now() - start < ms) {}
+                function delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
                 }
 
                 // Create a selectable textbox dynamically
