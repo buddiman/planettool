@@ -63,9 +63,11 @@ function runAway() {
     const runAwayPackage = new Uint8Array(totalLength)
 
     runAwayPackage.set(fightPackageBegin, 0)
-    runAwayPackage.set(checksums, fightPackageBegin.length)
-    runAwayPackage.set(fightPackageEnd, fightPackageBegin.length + 3)
-    runAwayPackage.set(runPackage, totalLength - 4)
+    runAwayPackage.set(checksums, 51)
+    runAwayPackage.set(fightPackageEnd, 54)
+    runAwayPackage.set(runPackage, 72)
+
+    console.log("Run Away Package: " + runAwayPackage)
 
 
     p = setInterval(() => {
@@ -73,7 +75,7 @@ function runAway() {
             return;
         }
         socket.send(runAwayPackage);
-    }, 1000);
+    }, 10000);
 }
 
 console.log("PPOTool > PPOTool started");
@@ -164,13 +166,13 @@ function initializeTool() {
                             }
                         })
                     });
-                    if(shouldRunOnElite) {
+                    if(shouldRunOnElite && isElite) {
                         runAway()
                         console.log("Successfully ran away from Elite!")
                     }
                     return;
                 }
-                fight();
+                runAway();
             }
         });
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
