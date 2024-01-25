@@ -69,8 +69,6 @@ function runAway() {
 
     runAwayPackage[2] = 0x49
 
-    console.log("Run Away Package: " + runAwayPackage)
-
 
     p = setInterval(() => {
         if (isPaused) {
@@ -174,7 +172,7 @@ function initializeTool() {
                     }
                     return;
                 }
-                runAway();
+                fight();
             }
         });
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
