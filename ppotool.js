@@ -36,7 +36,7 @@ let isInBattle = false;
 let fightPackage = null;
 let currentPokemonName = '';
 let p = null;
-let encounterRateTimeout = 0;
+let encounterRateTimeout = 400;
 
 let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
 pokemonToCatchList.sort();
@@ -183,17 +183,11 @@ function initializeTool() {
                                 }
                             }
 
-                            await delay(encounterRateTimeout)
-                            console.log(`Sending data for index ${i}`);
                             socket.send(h[i]);
 
                         }
                     }
-                }, 400);
-
-                function delay(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
+                }, encounterRateTimeout);
 
                 // Create a selectable textbox dynamically
                 const selectBox = document.createElement('select');
@@ -270,7 +264,7 @@ function initializeTool() {
 
                 const encounterRateTextbox = document.createElement('input');
                 encounterRateTextbox.type = 'text';
-                encounterRateTextbox.placeholder = '0';
+                encounterRateTextbox.placeholder = encounterRateTimeout;
 
                 encounterRateTextbox.style.marginTop = '10px';
                 encounterRateTextbox.style.padding = '5px';
