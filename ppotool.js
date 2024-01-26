@@ -210,6 +210,7 @@ function runTool() {
             }
 
             if(receivedPackageAsString.includes("call.u.mapRoc") && fullStartMiningPackage && !isPaused) {
+                console.log("PPOTool > callumapRoc received: " + receivedPackage)
                 if(receivedPackage[25] == miningXCoord && receivedPackage[33] == miningYCoord) {
                     if(checkMiningRespawnByte(receivedPackage)) {
                         console.log("PPOTool > Mining node respawned")
@@ -249,7 +250,7 @@ function runTool() {
             }
             if(receivedPackageAsString.includes("ismi") && !fullStartMiningPackage) {
                 setupUI()
-                console.log("PPOTool > Start mining package logged")
+                console.log("PPOTool > Start mining package logged" + origPackage)
                 fullStartMiningPackage = origPackage
             }
         }
