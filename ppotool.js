@@ -43,6 +43,8 @@ let isShiny = false;
 let isPaused = false;
 let isInBattle = false;
 let currentPokemonName = '';
+let miningXCoord = -1;
+let miningYCoord = -1;
 
 // Package Variables
 let fullFightPackage = null;
@@ -51,6 +53,7 @@ let fightPackageEnd = null
 let catchPackageBegin = null;
 let catchPackageToken = null;
 let catchPackageEnd = null;
+let fullStartMiningPackage = null;
 
 // Other Variables
 let socket = null;
@@ -140,6 +143,9 @@ function runTool() {
             "you hook correctly in the green or yellow part. After that, select your action to use in the fight. After " +
             "that, everything is setup and you don't need to do anything.";
     }
+    if(mode === "mining") {
+        ppotoolWindow.innerHTML = "<h2>Mining Mode</h2>";
+    }
 
     const z = _0xbee556 => {
         let webSocketReader = new FileReader();
@@ -202,6 +208,15 @@ function runTool() {
                     socket.send(fullCatchPackage)
                 }, randomNumber);
             }
+
+            if(receivedPackageAsString.includes("call.u.mapRoc") && fullStartMiningPackage && !isPaused) {
+                if(receivedPackage[25] == miningXCoord && receivedPackage[33] == miningYCoord) {
+                    if(checkMiningRespawnByte(receivedPackage)) {
+                        console.log("PPOTool > Mining node respawned")
+                        socket.send(fullStartMiningPackage)
+                    }
+                }
+            }
         });
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
     };
@@ -223,6 +238,20 @@ function runTool() {
             console.log("Initial Catch package received!")
             catchPackageBegin = new Uint8Array(origPackage.slice(0, 69))
             catchPackageEnd = new Uint8Array(origPackage.slice(85, 99))
+        }
+
+        if(mode === "mining" && (!fullStartMiningPackage || miningYCoord === -1)) {
+            ppotoolWindow.children[0].innerHTML = "Mining is running! Refresh page to stop the bot."
+            setupUI()
+            let receivedPackageAsString = String.fromCharCode(...origPackage)
+            if(receivedPackageAsString.includes("pf.mine")) {
+                console.log("PPOTool > Mining coords logged")
+                extractMiningXY(origPackage)
+            }
+            if(receivedPackageAsString.includes("ismi")) {
+                console.log("PPOTool > Start mining package logged")
+                fullStartMiningPackage = origPackage
+            }
         }
 
         // 0x91 = 145
@@ -390,6 +419,49 @@ function extractFightChecksum(battlePackage) {
 
             const extractedBytes = battlePackage.subarray(i + 5, i + 8);
             checksums = Array.from(extractedBytes);
+            break;
+        }
+    }
+}
+
+function checkMiningRespawnByte(miningPackage) {
+    // Sequence to find ("isActive")
+    const sequenceToFind = new Uint8Array([0x69, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65]);
+
+    for (let i = 0; i < miningPackage.length; i++) {
+        if (miningPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+            i += sequenceToFind.length;
+
+            if(miningPackage[i + 2] === 0x01) {
+                return true;
+            }
+            break;
+        }
+    }
+    return false;
+}
+
+function extractMiningXY(miningPackage) {
+    // Sequence to find ("rockX", "rockY")
+    const sequenceToFindX = new Uint8Array([0x72, 0x6f, 0x63, 0x6b, 0x58]);
+    const sequenceToFindY = new Uint8Array([0x72, 0x6f, 0x63, 0x6b, 0x59]);
+
+    for (let i = 0; i < miningPackage.length; i++) {
+        if (miningPackage.subarray(i, i + sequenceToFindX.length).every((value, index) => value === sequenceToFindX[index])) {
+            i += sequenceToFindX.length;
+
+            miningXCoord = miningPackage[i + 5]
+            console.log("PPOTool > mining x coord: " + miningXCoord)
+            break;
+        }
+    }
+
+    for (let i = 0; i < miningPackage.length; i++) {
+        if (miningPackage.subarray(i, i + sequenceToFindY.length).every((value, index) => value === sequenceToFindY[index])) {
+            i += sequenceToFindY.length;
+
+            miningYCoord = miningPackage[i + 5]
+            console.log("PPOTool > mining y coord: " + miningYCoord)
             break;
         }
     }
