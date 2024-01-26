@@ -76,6 +76,7 @@ function runTool() {
         webSocketReader.addEventListener("loadend", () => {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
+
             if (receivedPackageAsString.includes("gametype")) {
                 const match = receivedPackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
                 currentPokemonName = match ? match[1] : null
@@ -83,19 +84,19 @@ function runTool() {
                     console.log("No pokemon name found. ERROR!")
                 }
                 console.log("POKENAME: " + currentPokemonName)
+
+                if (receivedPackageAsString.includes("ELITE")) {
+                    console.log("ELITE FOUND!")
+                    isElite = true;
+                }
+
+                if (receivedPackageAsString.includes("shiny")) {
+                    console.log("SHINY FOUND!")
+                    isShiny = true;
+                }
+
+
             }
-
-
-            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("ELITE")) {
-                console.log("ELITE FOUND!")
-                isElite = true;
-            }
-
-            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("SHINY")) {
-                console.log("SHINY FOUND!")
-                isShiny = true;
-            }
-
 
             if (receivedPackageAsString.includes("|win|")) {
                 // Win or run away successful
