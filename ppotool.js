@@ -243,7 +243,7 @@ function runTool() {
         if(mode === "mining" && (!fullStartMiningPackage || miningYCoord === -1)) {
             ppotoolWindow.children[0].innerHTML = "Mining is running! Refresh page to stop the bot."
             let receivedPackageAsString = String.fromCharCode(...new Uint8Array(origPackage.slice(0)))
-            if(receivedPackageAsString.includes("pf.mine")) {
+            if(receivedPackageAsString.includes("rockX")) {
                 console.log("PPOTool > Mining coords logged")
                 extractMiningXY(origPackage)
             }
