@@ -425,6 +425,7 @@ function extractFightChecksum(battlePackage) {
 }
 
 function checkMiningRespawnByte(miningPackage) {
+    miningPackage = new Uint8Array(miningPackage)
     // Sequence to find ("isActive")
     const sequenceToFind = new Uint8Array([0x69, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65]);
 
@@ -442,6 +443,7 @@ function checkMiningRespawnByte(miningPackage) {
 }
 
 function extractMiningXY(miningPackage) {
+    miningPackage = new Uint8Array(miningPackage)
     // Sequence to find ("rockX", "rockY")
     const sequenceToFindX = new Uint8Array([0x72, 0x6f, 0x63, 0x6b, 0x58]);
     const sequenceToFindY = new Uint8Array([0x72, 0x6f, 0x63, 0x6b, 0x59]);
