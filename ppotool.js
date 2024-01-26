@@ -214,7 +214,10 @@ function runTool() {
                 if(receivedPackage[25] == miningXCoord && receivedPackage[33] == miningYCoord) {
                     if(checkMiningRespawnByte(receivedPackage)) {
                         console.log("PPOTool > Mining node respawned")
-                        socket.send(fullStartMiningPackage)
+                        //socket.send(fullStartMiningPackage)
+                        const event = new KeyboardEvent('keydown', {'key': 'space'});
+
+                        document.dispatchEvent(event);
                     }
                 }
             }
