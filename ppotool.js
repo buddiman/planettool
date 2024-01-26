@@ -1,4 +1,7 @@
 const runPackageEndSequence = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
+const catchPackageEndSequence = new Uint8Array([0x02]);
+const minWaitTimeFish = 1150;
+const maxWaitTimeFish = 1875;
 
 const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Golduck", "Growlithe", "Abra",
     "Kadabra", "Alakazam", "Ponyta", "Rapidash", "Slowpoke", "Slowbro", "Doduo", "Dodrio", "Seel", "Dewgong",
@@ -32,6 +35,7 @@ const ppotoolWindow = document.createElement('div');
 // Settings Variables
 let pokemonToCatchList = [];
 let shouldRunOnElite = false;
+let mode = "default"
 
 // Status Variables
 let isElite = false;
@@ -40,14 +44,19 @@ let isPaused = false;
 let isInBattle = false;
 let currentPokemonName = '';
 
+// Package Variables
+let fullFightPackage = null;
+let fightPackageBegin = null;
+let fightPackageEnd = null
+let catchPackageBegin = null;
+let catchPackageToken = null;
+let catchPackageEnd = null;
+
 // Other Variables
 let socket = null;
 let w = [];
 let h = null;
 let checksums = null;
-let fullFightPackage = null;
-let fightPackageBegin = null;
-let fightPackageEnd = null
 let p = null;
 
 function startup() {
@@ -57,11 +66,29 @@ function startup() {
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
     document.body.appendChild(ppotoolWindow);
 
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
-    nextButton.addEventListener('click', runTool);
+    const moveButton = document.createElement('button');
+    moveButton.textContent = 'Normal Mode';
+    moveButton.addEventListener('click', () => {
+        runTool()
+    });
 
-    ppotoolWindow.appendChild(nextButton);
+    const fishButton = document.createElement('button');
+    fishButton.textContent = 'Fishing Mode';
+    fishButton.addEventListener('click', () => {
+        mode = "fishing"
+        runTool()
+    });
+
+    const miningButton = document.createElement('button');
+    miningButton.textContent = 'Mining Mode (UNAVAILABLE)';
+    miningButton.addEventListener('click', () => {
+        mode = "mining"
+        runTool()
+    });
+
+    ppotoolWindow.appendChild(moveButton);
+    ppotoolWindow.appendChild(fishButton);
+    ppotoolWindow.appendChild(miningButton)
 
     pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
     pokemonToCatchList.sort();
@@ -105,7 +132,15 @@ function runAway() {
 
 
 function runTool() {
-    ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
+    if(mode === "default") {
+        ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
+    }
+    if(mode === "fishing") {
+        ppotoolWindow.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
+            "you hook correctly in the green or yellow part. After that, select your action to use in the fight. After " +
+            "that, everything is setup and you don't need to do anything.";
+    }
+
     const z = _0xbee556 => {
         let webSocketReader = new FileReader();
         webSocketReader.addEventListener("loadend", () => {
@@ -147,6 +182,26 @@ function runTool() {
                     fight();
                 }
             }
+
+            if(receivedPackageAsString.includes("call.hook") && catchPackageBegin && !isPaused) {
+                let token = receivedPackage.slice(30, 46)
+                catchPackageToken = token
+
+                const totalLength = catchPackageBegin.length + catchPackageToken.length + catchPackageEnd.length + 1;
+                const fullCatchPackage = new Uint8Array(totalLength)
+
+                fullCatchPackage.set(catchPackageBegin, 0)
+                fullCatchPackage.set(catchPackageToken, catchPackageBegin.length)
+                fullCatchPackage.set(catchPackageEnd, catchPackageBegin.length + catchPackageToken.length)
+                fullCatchPackage.set(catchPackageEndSequence, totalLength - 1)
+
+                const randomFraction = Math.random();
+                const randomNumber = Math.floor(randomFraction * (maxWaitTimeFish - minWaitTimeFish + 1)) + minWaitTimeFish;
+
+                setTimeout(function() {
+                    socket.send(fullCatchPackage)
+                }, randomNumber);
+            }
         });
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
     };
@@ -162,8 +217,16 @@ function runTool() {
             fightPackageEnd = new Uint8Array(origPackage.slice(54, 72))
         }
 
+        if (origPackage.byteLength === 100 && !catchPackageBegin && mode === "fishing") {
+            ppotoolWindow.children[0].innerHTML = "Fishing is running! Refresh page to stop the bot."
+            setupUI()
+            console.log("Initial Catch package received!")
+            catchPackageBegin = new Uint8Array(origPackage.slice(0, 69))
+            catchPackageEnd = new Uint8Array(origPackage.slice(85, 99))
+        }
+
         // 0x91 = 145
-        if (origPackage.byteLength === 145 && !h) {
+        if (origPackage.byteLength === 145 && !h && mode === "default") {
             w.push(origPackage);
             if (w.length === 2) {
                 ppotoolWindow.children[0].innerHTML = "Take a step in the opposite direction";
@@ -172,109 +235,8 @@ function runTool() {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
                 doMovement()
+                setupUI()
 
-                // Create a selectable textbox dynamically
-                const selectBox = document.createElement('select');
-                selectBox.style.marginTop = '10px'; // Add some margin for better visibility
-
-                // Populate the select box with options from pokemonToCatchList
-                pokemonToCatchList.forEach(pokemonName => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = pokemonName;
-                    optionElement.textContent = pokemonName;
-                    selectBox.appendChild(optionElement);
-                });
-
-                // Create a button to remove the selected Pokémon
-                const removeButton = document.createElement('button');
-                removeButton.textContent = 'Remove Pokémon';
-                removeButton.style.marginTop = '5px'; // Add some margin for better visibility
-                removeButton.addEventListener('click', () => {
-                    const selectedPokemon = selectBox.value;
-                    const index = pokemonToCatchList.indexOf(selectedPokemon);
-                    if (index !== -1) {
-                        // Remove the selected Pokémon from the array
-                        pokemonToCatchList.splice(index, 1);
-
-                        // Update the select box options
-                        updateSelectBoxOptions();
-                    }
-                });
-
-                // Create a button to add a Pokémon using a dialog prompt
-                const addButton = document.createElement('button');
-                addButton.textContent = 'Add Pokémon';
-                addButton.style.marginTop = '5px'; // Add some margin for better visibility
-                addButton.addEventListener('click', () => {
-                    // Show a dialog prompt to add a Pokémon
-                    const newPokemon = prompt('Enter the name of the Pokémon to add:');
-                    if (newPokemon && !pokemonToCatchList.includes(newPokemon)) {
-                        // Add the new Pokémon to the array
-                        pokemonToCatchList.push(newPokemon);
-                        pokemonToCatchList.sort()
-
-                        // Update the select box options
-                        updateSelectBoxOptions();
-                    }
-                });
-
-                // Pause Button
-                const stopButton = document.createElement('button');
-                stopButton.textContent = 'Tool is running... Click here to pause!';
-                stopButton.style.marginTop = '10px'; // Add some margin for better visibility
-                stopButton.style.backgroundColor = 'green'
-
-                // Add event listener to the stop button
-                stopButton.addEventListener('click', () => {
-                    if (!isPaused) {
-                        isPaused = true
-                        stopButton.style.backgroundColor = 'red'
-                        stopButton.textContent = 'Tool is NOT running... Click here to restart!'
-                    } else {
-                        isPaused = false
-                        doMovement()
-                        stopButton.style.backgroundColor = 'green'
-                        stopButton.textContent = 'Tool is running... Click here to pause!'
-                    }
-                });
-
-                // Create a checkbox element
-                const runOnEliteCheckbox = document.createElement('input');
-                runOnEliteCheckbox.type = 'checkbox';
-
-                const runOnEliteCheckboxLabel = document.createElement('label');
-                runOnEliteCheckboxLabel.textContent = 'Run on all ELITES?';
-
-                runOnEliteCheckbox.style.marginTop = '10px';
-                runOnEliteCheckbox.style.marginRight = '5px';
-                runOnEliteCheckboxLabel.style.marginTop = '10px';
-
-                runOnEliteCheckbox.addEventListener('change', function () {
-                    // Update the global variable based on the checkbox state
-                    shouldRunOnElite = runOnEliteCheckbox.checked;
-
-                    // Perform any actions with the updated value
-                    console.log('PPOTool > Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
-                });
-
-                // Append the stop button to the ppotoolWindow
-                ppotoolWindow.appendChild(stopButton);
-                ppotoolWindow.appendChild(selectBox);
-                ppotoolWindow.appendChild(removeButton);
-                ppotoolWindow.appendChild(addButton);
-                ppotoolWindow.appendChild(runOnEliteCheckbox);
-                ppotoolWindow.appendChild(runOnEliteCheckboxLabel);
-
-
-                function updateSelectBoxOptions() {
-                    selectBox.innerHTML = '';
-                    pokemonToCatchList.forEach(pokemonName => {
-                        const optionElement = document.createElement('option');
-                        optionElement.value = pokemonName;
-                        optionElement.textContent = pokemonName;
-                        selectBox.appendChild(optionElement);
-                    });
-                }
             }
         }
 
@@ -311,6 +273,111 @@ function doMovement() {
             console.log("PPOTool > Tool paused!")
         }
     }, 400);
+}
+
+function setupUI() {
+    // Create a selectable textbox dynamically
+    const selectBox = document.createElement('select');
+    selectBox.style.marginTop = '10px'; // Add some margin for better visibility
+
+    // Populate the select box with options from pokemonToCatchList
+    pokemonToCatchList.forEach(pokemonName => {
+        const optionElement = document.createElement('option');
+        optionElement.value = pokemonName;
+        optionElement.textContent = pokemonName;
+        selectBox.appendChild(optionElement);
+    });
+
+    // Create a button to remove the selected Pokémon
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Remove Pokémon';
+    removeButton.style.marginTop = '5px'; // Add some margin for better visibility
+    removeButton.addEventListener('click', () => {
+        const selectedPokemon = selectBox.value;
+        const index = pokemonToCatchList.indexOf(selectedPokemon);
+        if (index !== -1) {
+            // Remove the selected Pokémon from the array
+            pokemonToCatchList.splice(index, 1);
+
+            // Update the select box options
+            updateSelectBoxOptions();
+        }
+    });
+
+    // Create a button to add a Pokémon using a dialog prompt
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Add Pokémon';
+    addButton.style.marginTop = '5px'; // Add some margin for better visibility
+    addButton.addEventListener('click', () => {
+        // Show a dialog prompt to add a Pokémon
+        const newPokemon = prompt('Enter the name of the Pokémon to add:');
+        if (newPokemon && !pokemonToCatchList.includes(newPokemon)) {
+            // Add the new Pokémon to the array
+            pokemonToCatchList.push(newPokemon);
+            pokemonToCatchList.sort()
+
+            // Update the select box options
+            updateSelectBoxOptions();
+        }
+    });
+
+    // Pause Button
+    const stopButton = document.createElement('button');
+    stopButton.textContent = 'Tool is running... Click here to pause!';
+    stopButton.style.marginTop = '10px'; // Add some margin for better visibility
+    stopButton.style.backgroundColor = 'green'
+
+    // Add event listener to the stop button
+    stopButton.addEventListener('click', () => {
+        if (!isPaused) {
+            isPaused = true
+            stopButton.style.backgroundColor = 'red'
+            stopButton.textContent = 'Tool is NOT running... Click here to restart!'
+        } else {
+            isPaused = false
+            doMovement()
+            stopButton.style.backgroundColor = 'green'
+            stopButton.textContent = 'Tool is running... Click here to pause!'
+        }
+    });
+
+    // Create a checkbox element
+    const runOnEliteCheckbox = document.createElement('input');
+    runOnEliteCheckbox.type = 'checkbox';
+
+    const runOnEliteCheckboxLabel = document.createElement('label');
+    runOnEliteCheckboxLabel.textContent = 'Run on all ELITES?';
+
+    runOnEliteCheckbox.style.marginTop = '10px';
+    runOnEliteCheckbox.style.marginRight = '5px';
+    runOnEliteCheckboxLabel.style.marginTop = '10px';
+
+    runOnEliteCheckbox.addEventListener('change', function () {
+        // Update the global variable based on the checkbox state
+        shouldRunOnElite = runOnEliteCheckbox.checked;
+
+        // Perform any actions with the updated value
+        console.log('PPOTool > Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
+    });
+
+    // Append the stop button to the ppotoolWindow
+    ppotoolWindow.appendChild(stopButton);
+    ppotoolWindow.appendChild(selectBox);
+    ppotoolWindow.appendChild(removeButton);
+    ppotoolWindow.appendChild(addButton);
+    ppotoolWindow.appendChild(runOnEliteCheckbox);
+    ppotoolWindow.appendChild(runOnEliteCheckboxLabel);
+
+
+    function updateSelectBoxOptions() {
+        selectBox.innerHTML = '';
+        pokemonToCatchList.forEach(pokemonName => {
+            const optionElement = document.createElement('option');
+            optionElement.value = pokemonName;
+            optionElement.textContent = pokemonName;
+            selectBox.appendChild(optionElement);
+        });
+    }
 }
 
 function extractFightChecksum(battlePackage) {
