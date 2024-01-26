@@ -1,3 +1,5 @@
+const runPackageEndSequence = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
+
 const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Golduck", "Growlithe", "Abra",
     "Kadabra", "Alakazam", "Ponyta", "Rapidash", "Slowpoke", "Slowbro", "Doduo", "Dodrio", "Seel", "Dewgong",
     "Exeggcute", "Cubone", "Marowak", "Chansey", "Tangela", "Seadra", "Staryu", "Starmie", "Magmar", "Tauros",
@@ -9,7 +11,7 @@ const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Gold
     "Shuppet", "Banette", "Absol", "Clamperl", "Relicanth", "Starly", "Shinx", "Luxio", "Luxray", "Buizel",
     "Floatzel", "Happiny", "Croagunk", "Toxicroak", "Mantyke", "Yanmega", "Rotom", "Roggenrola", "Woobat",
     "Drilbur", "Excadrill", "Timburr", "Maractus", "Sigilyph", "Trubbish", "Zoroark", "Gothita", "Frillish",
-    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher"]
+    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher", "Clefairy"]
 
 const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squirtle", "Blastoise", "Machoke",
     "Farfetch'd", "Onix", "Rhyhorn", "Kangaskhan", "Scyther", "Electabuzz", "Pinsir", "Snorlax", "Dratini", "Dragonair",
@@ -20,52 +22,74 @@ const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squir
     "Bronzong", "Bonsly", "Mime Jr.", "Spritomb", "Gible", "Munchlax", "Hippopotas", "Hippowdon", "Skorupi", "Drapion",
     "Snover", "Abomasnow", "Mamoswine", "Phione", "Sandile", "Solosis", "Foongus", "Amoonguss", "Litwick", "Lampent",
     "Druddigon", "Golett", "Pawniard", "Deino", "Hydreigon", "Larvesta", "Volcarona", "Chespin", "Fennekin",
-    "Fletchling", "Helioptile", "Goomy", "Klefki"]
+    "Fletchling", "Helioptile", "Goomy", "Klefki", "Machop"]
 
 const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", "Suicune", "Heatran",
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
 
-let socket = null;
+const ppotoolWindow = document.createElement('div');
+
+// Settings Variables
+let pokemonToCatchList = [];
+let shouldRunOnElite = false;
+
+// Status Variables
 let isElite = false;
 let isShiny = false;
 let isPaused = false;
+let isInBattle = false;
+let currentPokemonName = '';
+
+// Other Variables
+let socket = null;
 let w = [];
 let h = null;
 let checksums = null;
-let isInBattle = false;
-let fightPackage = null;
+let fullFightPackage = null;
 let fightPackageBegin = null;
 let fightPackageEnd = null
-let currentPokemonName = '';
 let p = null;
-let shouldRunOnElite = false;
-let runPackage = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
 
-let pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
-pokemonToCatchList.sort();
+function startup() {
+    console.log("PPOTool > PPOTool started");
+    ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
+    ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
+        "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
+    document.body.appendChild(ppotoolWindow);
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.addEventListener('click', runTool);
+
+    ppotoolWindow.appendChild(nextButton);
+
+    pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
+    pokemonToCatchList.sort();
+}
+
 
 function fight() {
+    if (isPaused) {
+        return;
+    }
     clearTimeout(p);
-    new Uint8Array(fightPackage)[51] = checksums[0];
-    new Uint8Array(fightPackage)[52] = checksums[1];
-    new Uint8Array(fightPackage)[53] = checksums[2];
+    new Uint8Array(fullFightPackage)[51] = checksums[0];
+    new Uint8Array(fullFightPackage)[52] = checksums[1];
+    new Uint8Array(fullFightPackage)[53] = checksums[2];
     p = setInterval(() => {
-        if (isPaused) {
-            return;
-        }
-        socket.send(fightPackage);
+        socket.send(fullFightPackage);
     }, 1000);
 }
 
 function runAway() {
     clearTimeout(p);
-    const totalLength = fightPackageBegin.length + fightPackageEnd.length + runPackage.length + 3;
+    const totalLength = fightPackageBegin.length + fightPackageEnd.length + runPackageEndSequence.length + 3;
     const runAwayPackage = new Uint8Array(totalLength)
 
     runAwayPackage.set(fightPackageBegin, 0)
     runAwayPackage.set(checksums, 51)
     runAwayPackage.set(fightPackageEnd, 54)
-    runAwayPackage.set(runPackage, 72)
+    runAwayPackage.set(runPackageEndSequence, 72)
 
     runAwayPackage[2] = 0x49
 
@@ -78,39 +102,37 @@ function runAway() {
     }, 1000);
 }
 
-console.log("PPOTool > PPOTool started");
-const ppotoolWindow = document.createElement('div');
-ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
-ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
-    "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
 
-function initializeTool() {
+
+function runTool() {
     ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
     const z = _0xbee556 => {
         let webSocketReader = new FileReader();
         webSocketReader.addEventListener("loadend", () => {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
+
             if (receivedPackageAsString.includes("gametype")) {
-                const match = receivedPackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
-                currentPokemonName = match ? match[1] : null
-                if (!currentPokemonName) {
-                    console.log("No pokemon name found. ERROR!")
+                setCurrentPokemonName(receivedPackageAsString)
+                checkForShinyAndElite(receivedPackageAsString)
+
+                isInBattle = true;
+                if (!fullFightPackage || isPaused) {
+                    return;
                 }
-                console.log("POKENAME: " + currentPokemonName)
+
+                extractFightChecksum(receivedPackage)
+
+                if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
+                    sendStopMessageToDiscord()
+                    if (shouldRunOnElite && isElite) {
+                        runAway()
+                        console.log("PPOTool > Successfully ran away from Elite!")
+                    }
+                    return;
+                }
+                fight();
             }
-
-
-            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("ELITE")) {
-                console.log("ELITE FOUND!")
-                isElite = true;
-            }
-
-            if (receivedPackageAsString.includes("gametype") && receivedPackageAsString.includes("SHINY")) {
-                console.log("SHINY FOUND!")
-                isShiny = true;
-            }
-
 
             if (receivedPackageAsString.includes("|win|")) {
                 // Win or run away successful
@@ -121,58 +143,9 @@ function initializeTool() {
             } else {
                 if (receivedPackageAsString.includes("upkeep") && !isPaused) {
                     // Is called when an action in battle is executed but the fight is not finished
-                    console.log("UPKEEP?!?!")
+                    console.log("PPOTool > Upkeep received!")
                     fight();
                 }
-            }
-
-            if (receivedPackageAsString.includes("gametype")) {
-                isInBattle = true;
-                if (!fightPackage || isPaused) {
-                    return;
-                }
-
-                // Sequence to find ("result")
-                const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
-
-                for (let i = 0; i < receivedPackage.length; i++) {
-                    if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
-                        i += sequenceToFind.length;
-
-                        const extractedBytes = receivedPackage.subarray(i + 5, i + 8);
-                        checksums = Array.from(extractedBytes);
-                        break;
-                    }
-                }
-
-                if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
-                    let pokemonName = "";
-                    if (isElite) {
-                        pokemonName += "ELITE ";
-                    }
-                    if (isShiny) {
-                        pokemonName += "SHINY ";
-                    }
-                    pokemonName += currentPokemonName;
-                    fetch(discord[0], {
-                        'method': "post",
-                        'headers': {
-                            'Content-Type': "application/json"
-                        },
-                        'body': JSON.stringify({
-                            'content': '<@' + discord[1] + "> we got " + pokemonName + '!',
-                            'allowed_mentions': {
-                                'parse': ["users"]
-                            }
-                        })
-                    });
-                    if(shouldRunOnElite && isElite) {
-                        runAway()
-                        console.log("Successfully ran away from Elite!")
-                    }
-                    return;
-                }
-                fight();
             }
         });
         webSocketReader.readAsArrayBuffer(_0xbee556.data);
@@ -183,8 +156,8 @@ function initializeTool() {
         if (origPackage == null) {
             return;
         }
-        if (origPackage.byteLength === 79 && !fightPackage) {
-            fightPackage = origPackage;
+        if (origPackage.byteLength === 79 && !fullFightPackage) {
+            fullFightPackage = origPackage;
             fightPackageBegin = new Uint8Array(origPackage.slice(0, 51))
             fightPackageEnd = new Uint8Array(origPackage.slice(54, 72))
         }
@@ -198,24 +171,7 @@ function initializeTool() {
             if (w.length === 4) {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
-                x = setInterval(() => {
-                    // MOVEMENT HERE!
-                    if (!isInBattle && !isPaused) {
-                        for (i = 0; i < 4; i++) {
-                            for (j = 0; j < 4; j++) {
-                                let _0x458770 = new Uint8Array(h[j]);
-                                _0x458770[0x45]++;
-                                if (_0x458770[69] == 0) {
-                                    _0x458770[68]++;
-                                }
-                                if (i % 2 > 0) {
-                                    _0x458770[84]++;
-                                }
-                            }
-                            socket.send(h[i]);
-                        }
-                    }
-                }, 400);
+                doMovement()
 
                 // Create a selectable textbox dynamically
                 const selectBox = document.createElement('select');
@@ -262,10 +218,9 @@ function initializeTool() {
                     }
                 });
 
-
-                // Create a stop button dynamically
+                // Pause Button
                 const stopButton = document.createElement('button');
-                stopButton.textContent = 'Bot is running... Stop Bot!';
+                stopButton.textContent = 'Tool is running... Click here to pause!';
                 stopButton.style.marginTop = '10px'; // Add some margin for better visibility
                 stopButton.style.backgroundColor = 'green'
 
@@ -274,11 +229,12 @@ function initializeTool() {
                     if (!isPaused) {
                         isPaused = true
                         stopButton.style.backgroundColor = 'red'
-                        stopButton.textContent = 'Bot is NOT running... Restart Bot!'
+                        stopButton.textContent = 'Tool is NOT running... Click here to restart!'
                     } else {
                         isPaused = false
+                        doMovement()
                         stopButton.style.backgroundColor = 'green'
-                        stopButton.textContent = 'Bot is running... Stop Bot!'
+                        stopButton.textContent = 'Tool is running... Click here to pause!'
                     }
                 });
 
@@ -293,12 +249,12 @@ function initializeTool() {
                 runOnEliteCheckbox.style.marginRight = '5px';
                 runOnEliteCheckboxLabel.style.marginTop = '10px';
 
-                runOnEliteCheckbox.addEventListener('change', function() {
+                runOnEliteCheckbox.addEventListener('change', function () {
                     // Update the global variable based on the checkbox state
                     shouldRunOnElite = runOnEliteCheckbox.checked;
 
                     // Perform any actions with the updated value
-                    console.log('Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
+                    console.log('PPOTool > Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
                 });
 
                 // Append the stop button to the ppotoolWindow
@@ -311,10 +267,7 @@ function initializeTool() {
 
 
                 function updateSelectBoxOptions() {
-                    // Clear existing options
                     selectBox.innerHTML = '';
-
-                    // Populate the select box with updated options
                     pokemonToCatchList.forEach(pokemonName => {
                         const optionElement = document.createElement('option');
                         optionElement.value = pokemonName;
@@ -333,11 +286,89 @@ function initializeTool() {
     };
 }
 
-const nextButton = document.createElement('button');
-nextButton.textContent = 'Next';
-nextButton.addEventListener('click', initializeTool);
+startup()
 
+function doMovement() {
+    x = setInterval(() => {
+        // MOVEMENT HERE!
+        if (!isInBattle) {
+            for (i = 0; i < 4; i++) {
+                for (j = 0; j < 4; j++) {
+                    let _0x458770 = new Uint8Array(h[j]);
+                    _0x458770[0x45]++;
+                    if (_0x458770[69] == 0) {
+                        _0x458770[68]++;
+                    }
+                    if (i % 2 > 0) {
+                        _0x458770[84]++;
+                    }
+                }
+                socket.send(h[i]);
+            }
+        }
+        if(isPaused) {
+            clearInterval(x)
+            console.log("PPOTool > Tool paused!")
+        }
+    }, 400);
+}
 
-ppotoolWindow.appendChild(nextButton);
+function extractFightChecksum(battlePackage) {
+    // Sequence to find ("result")
+    const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
 
-document.body.appendChild(ppotoolWindow);
+    for (let i = 0; i < battlePackage.length; i++) {
+        if (battlePackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+            i += sequenceToFind.length;
+
+            const extractedBytes = battlePackage.subarray(i + 5, i + 8);
+            checksums = Array.from(extractedBytes);
+            break;
+        }
+    }
+}
+
+function checkForShinyAndElite(battlePackageAsString) {
+    if (battlePackageAsString.includes("ELITE")) {
+        isElite = true;
+    }
+
+    if (battlePackageAsString.includes("shiny")) {
+        console.log("PPOTool > SHINY FOUND!")
+        isShiny = true;
+    }
+}
+
+function setCurrentPokemonName(battlePackageAsString) {
+    const match = battlePackageAsString.match(/\|player\|p2\|([^|]*)\|\|/)
+    currentPokemonName = match ? match[1] : null
+    if (!currentPokemonName) {
+        console.log("PPOTool > No pokemon name found. ERROR!")
+    }
+    console.log("PPOTool > Current Pokemon: " + currentPokemonName)
+}
+
+function sendStopMessageToDiscord() {
+    let pokemonName = "";
+    if (isElite) {
+        pokemonName += "ELITE ";
+    }
+    if (isShiny) {
+        pokemonName += "SHINY ";
+    }
+    pokemonName += currentPokemonName;
+
+    fetch(discord[0], {
+        'method': "post",
+        'headers': {
+            'Content-Type': "application/json"
+        },
+        'body': JSON.stringify({
+            'content': '<@' + discord[1] + "> we got " + pokemonName + '!',
+            'allowed_mentions': {
+                'parse': ["users"]
+            }
+        })
+    });
+}
+
