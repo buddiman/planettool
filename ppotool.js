@@ -434,7 +434,7 @@ function checkMiningRespawnByte(miningPackage) {
         if (miningPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
             i += sequenceToFind.length;
 
-            if(miningPackage[i + 2] === 0x01) {
+            if(miningPackage[i + 1] === 0x01) {
                 return true;
             }
             break;
