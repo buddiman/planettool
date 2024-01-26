@@ -142,7 +142,7 @@ function runTool() {
             if (w.length === 4) {
                 ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
-                doMovement(socket)
+                doMovement()
 
                 // Create a selectable textbox dynamically
                 const selectBox = document.createElement('select');
