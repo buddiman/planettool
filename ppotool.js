@@ -1,22 +1,25 @@
 const ppotoolWindow = document.createElement('div');
 
-let socket = null;
+// Settings Variables
+let pokemonToCatchList = [];
+let shouldRunOnElite = false;
+
+// Status Variables
 let isElite = false;
 let isShiny = false;
 let isPaused = false;
+let isInBattle = false;
+let currentPokemonName = '';
+
+// Other Variables
+let socket = null;
 let w = [];
 let h = null;
 let checksums = null;
-let isInBattle = false;
 let fightPackage = null;
 let fightPackageBegin = null;
 let fightPackageEnd = null
-let currentPokemonName = '';
 let p = null;
-let shouldRunOnElite = false;
-let runPackage = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
-
-let pokemonToCatchList = [];
 
 function fight() {
     clearTimeout(p);
@@ -33,13 +36,13 @@ function fight() {
 
 function runAway() {
     clearTimeout(p);
-    const totalLength = fightPackageBegin.length + fightPackageEnd.length + runPackage.length + 3;
+    const totalLength = fightPackageBegin.length + fightPackageEnd.length + runPackageEndSequence.length + 3;
     const runAwayPackage = new Uint8Array(totalLength)
 
     runAwayPackage.set(fightPackageBegin, 0)
     runAwayPackage.set(checksums, 51)
     runAwayPackage.set(fightPackageEnd, 54)
-    runAwayPackage.set(runPackage, 72)
+    runAwayPackage.set(runPackageEndSequence, 72)
 
     runAwayPackage[2] = 0x49
 
@@ -118,18 +121,9 @@ function runTool() {
                     return;
                 }
 
-                // Sequence to find ("result")
-                const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
+                extractFightChecksum(receivedPackage)
 
-                for (let i = 0; i < receivedPackage.length; i++) {
-                    if (receivedPackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
-                        i += sequenceToFind.length;
 
-                        const extractedBytes = receivedPackage.subarray(i + 5, i + 8);
-                        checksums = Array.from(extractedBytes);
-                        break;
-                    }
-                }
 
                 if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                     let pokemonName = "";
@@ -321,6 +315,23 @@ function runTool() {
 
 startup()
 
+function extractFightChecksum(battlePackage) {
+    // Sequence to find ("result")
+    const sequenceToFind = new Uint8Array([0x75, 0x70, 0x64, 0x61, 0x74, 0x65]);
+
+    for (let i = 0; i < battlePackage.length; i++) {
+        if (battlePackage.subarray(i, i + sequenceToFind.length).every((value, index) => value === sequenceToFind[index])) {
+            i += sequenceToFind.length;
+
+            const extractedBytes = battlePackage.subarray(i + 5, i + 8);
+            checksums = Array.from(extractedBytes);
+            break;
+        }
+    }
+}
+
+const runPackageEndSequence = new Uint8Array([0x03, 0x72, 0x75, 0x6e])
+
 const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Golduck", "Growlithe", "Abra",
     "Kadabra", "Alakazam", "Ponyta", "Rapidash", "Slowpoke", "Slowbro", "Doduo", "Dodrio", "Seel", "Dewgong",
     "Exeggcute", "Cubone", "Marowak", "Chansey", "Tangela", "Seadra", "Staryu", "Starmie", "Magmar", "Tauros",
@@ -332,7 +343,7 @@ const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Gold
     "Shuppet", "Banette", "Absol", "Clamperl", "Relicanth", "Starly", "Shinx", "Luxio", "Luxray", "Buizel",
     "Floatzel", "Happiny", "Croagunk", "Toxicroak", "Mantyke", "Yanmega", "Rotom", "Roggenrola", "Woobat",
     "Drilbur", "Excadrill", "Timburr", "Maractus", "Sigilyph", "Trubbish", "Zoroark", "Gothita", "Frillish",
-    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher"]
+    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher", "Clefairy"]
 
 const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squirtle", "Blastoise", "Machoke",
     "Farfetch'd", "Onix", "Rhyhorn", "Kangaskhan", "Scyther", "Electabuzz", "Pinsir", "Snorlax", "Dratini", "Dragonair",
@@ -343,7 +354,7 @@ const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squir
     "Bronzong", "Bonsly", "Mime Jr.", "Spritomb", "Gible", "Munchlax", "Hippopotas", "Hippowdon", "Skorupi", "Drapion",
     "Snover", "Abomasnow", "Mamoswine", "Phione", "Sandile", "Solosis", "Foongus", "Amoonguss", "Litwick", "Lampent",
     "Druddigon", "Golett", "Pawniard", "Deino", "Hydreigon", "Larvesta", "Volcarona", "Chespin", "Fennekin",
-    "Fletchling", "Helioptile", "Goomy", "Klefki"]
+    "Fletchling", "Helioptile", "Goomy", "Klefki", "Machop"]
 
 const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", "Suicune", "Heatran",
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
