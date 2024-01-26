@@ -452,7 +452,7 @@ function extractMiningXY(miningPackage) {
         if (miningPackage.subarray(i, i + sequenceToFindX.length).every((value, index) => value === sequenceToFindX[index])) {
             i += sequenceToFindX.length;
 
-            miningXCoord = miningPackage[i + 5]
+            miningXCoord = miningPackage[i + 4]
             console.log("PPOTool > mining x coord: " + miningXCoord)
             break;
         }
@@ -462,7 +462,7 @@ function extractMiningXY(miningPackage) {
         if (miningPackage.subarray(i, i + sequenceToFindY.length).every((value, index) => value === sequenceToFindY[index])) {
             i += sequenceToFindY.length;
 
-            miningYCoord = miningPackage[i + 5]
+            miningYCoord = miningPackage[i + 4]
             console.log("PPOTool > mining y coord: " + miningYCoord)
             break;
         }
