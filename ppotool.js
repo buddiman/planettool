@@ -32,11 +32,15 @@ const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", 
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
 
 const ppotoolWindow = document.createElement('div');
+const resizer = document.createElement('div');
 
 // Settings Variables
 let pokemonToCatchList = [];
 let shouldRunOnElite = false;
 let mode = "default"
+let isResizing = false;
+let lastX, lastY, startX, startY;
+let isDragging = false;
 
 // Status Variables
 let isElite = false;
@@ -65,7 +69,53 @@ function startup() {
     ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
     ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
+    resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
+    ppotoolWindow.appendChild(resizer);
     document.body.appendChild(ppotoolWindow);
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isResizing) {
+            const width = ppotoolWindow.offsetWidth + (e.clientX - startX);
+            const height = ppotoolWindow.offsetHeight + (e.clientY - startY);
+            ppotoolWindow.style.width = `${width}px`;
+            ppotoolWindow.style.height = `${height}px`;
+            startX = e.clientX;
+            startY = e.clientY;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isResizing = false;
+    });
+
+    document.getElementById('ppotoolHeader').addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            const newLeft = ppotoolWindow.offsetLeft + deltaX;
+            const newTop = ppotoolWindow.offsetTop + deltaY;
+            ppotoolWindow.style.left = `${newLeft}px`;
+            ppotoolWindow.style.top = `${newTop}px`;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
 
     const moveButton = document.createElement('button');
     moveButton.textContent = 'Normal Mode';
