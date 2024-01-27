@@ -32,6 +32,8 @@ const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", 
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
 
 const ppotoolWindow = document.createElement('div');
+const ppotoolContent = document.createElement('div');
+const ppotoolHeader = ppotoolWindow.querySelector('#ppotoolHeader');
 const resizer = document.createElement('div');
 
 // Settings Variables
@@ -66,12 +68,13 @@ let p = null;
 
 function startup() {
     console.log("PPOTool > PPOTool started");
+    ppotoolWindow.appendChild(ppotoolHeader);
+    ppotoolWindow.appendChild(ppotoolContent);
     ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
     ppotoolWindow.innerHTML = "<div id='ppotoolHeader' style='cursor: move; padding: 8px; background-color: #3498db; color: #fff;'>PPOTool</div><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
     resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
     ppotoolWindow.appendChild(resizer);
-    const ppotoolHeader = ppotoolWindow.querySelector('#ppotoolHeader');
 
     resizer.addEventListener('mousedown', (e) => {
         isResizing = true;
@@ -186,10 +189,10 @@ function runAway() {
 
 function runTool() {
     if(mode === "default") {
-        ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
+        ppotoolContent.innerHTML = "<h2>Take a step in any direction</h2>";
     }
     if(mode === "fishing") {
-        ppotoolWindow.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
+        ppotoolContent.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
             "you hook correctly in the green or yellow part. After that, select your action to use in the fight. After " +
             "that, everything is setup and you don't need to do anything.";
     }
@@ -271,7 +274,7 @@ function runTool() {
         }
 
         if (origPackage.byteLength === 100 && !catchPackageBegin && mode === "fishing") {
-            ppotoolWindow.children[0].innerHTML = "Fishing is running! Refresh page to stop the bot."
+            ppotoolContent.innerHTML = "Fishing is running! Refresh page to stop the bot."
             setupUI()
             console.log("Initial Catch package received!")
             catchPackageBegin = new Uint8Array(origPackage.slice(0, 69))
@@ -282,10 +285,10 @@ function runTool() {
         if (origPackage.byteLength === 145 && !h && mode === "default") {
             w.push(origPackage);
             if (w.length === 2) {
-                ppotoolWindow.children[0].innerHTML = "Take a step in the opposite direction";
+                ppotoolContent.innerHTML = "Take a step in the opposite direction";
             }
             if (w.length === 4) {
-                ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
+                ppotoolContent.innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
                 doMovement()
                 setupUI()
