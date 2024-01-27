@@ -67,11 +67,10 @@ let p = null;
 function startup() {
     console.log("PPOTool > PPOTool started");
     ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
-    ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
+    ppotoolWindow.innerHTML = "<div id='ppotoolHeader' style='cursor: move; padding: 8px; background-color: #3498db; color: #fff;'>PPOTool</div><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
     resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
     ppotoolWindow.appendChild(resizer);
-    document.body.appendChild(ppotoolWindow);
 
     resizer.addEventListener('mousedown', (e) => {
         isResizing = true;
@@ -140,6 +139,8 @@ function startup() {
     ppotoolWindow.appendChild(moveButton);
     ppotoolWindow.appendChild(fishButton);
     ppotoolWindow.appendChild(miningButton)
+
+    document.body.appendChild(ppotoolWindow);
 
     pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
     pokemonToCatchList.sort();
