@@ -77,6 +77,17 @@ function startup() {
     resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
     ppotoolWindow.appendChild(resizer);
 
+    const minimizeButton = document.createElement('button');
+    minimizeButton.textContent = 'Minimize';
+    minimizeButton.style.marginRight = '5px'; // Adjust margin as needed
+
+    // Add event listener to minimize button
+    minimizeButton.addEventListener('click', () => {
+        ppotoolContent.style.display = ppotoolContent.style.display === 'none' ? 'block' : 'none';
+    });
+
+    ppotoolHeader.appendChild(minimizeButton);
+
     resizer.addEventListener('mousedown', (e) => {
         isResizing = true;
         startX = e.clientX;
@@ -187,12 +198,11 @@ function runAway() {
 }
 
 
-
 function runTool() {
-    if(mode === "default") {
+    if (mode === "default") {
         ppotoolContent.innerHTML = "<h2>Take a step in any direction</h2>";
     }
-    if(mode === "fishing") {
+    if (mode === "fishing") {
         ppotoolContent.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
             "you hook correctly in the green or yellow part. After that, select your action to use in the fight. After " +
             "that, everything is setup and you don't need to do anything.";
@@ -240,7 +250,7 @@ function runTool() {
                 }
             }
 
-            if(receivedPackageAsString.includes("call.hook") && catchPackageBegin && !isPaused) {
+            if (receivedPackageAsString.includes("call.hook") && catchPackageBegin && !isPaused) {
                 let token = receivedPackage.slice(30, 46)
                 catchPackageToken = token
 
@@ -255,7 +265,7 @@ function runTool() {
                 const randomFraction = Math.random();
                 const randomNumber = Math.floor(randomFraction * (maxWaitTimeFish - minWaitTimeFish + 1)) + minWaitTimeFish;
 
-                setTimeout(function() {
+                setTimeout(function () {
                     socket.send(fullCatchPackage)
                 }, randomNumber);
             }
@@ -325,7 +335,7 @@ function doMovement() {
                 socket.send(h[i]);
             }
         }
-        if(isPaused) {
+        if (isPaused) {
             clearInterval(x)
             console.log("PPOTool > Tool paused!")
         }
