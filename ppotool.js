@@ -71,6 +71,7 @@ function startup() {
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
     resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
     ppotoolWindow.appendChild(resizer);
+    const ppotoolHeader = ppotoolWindow.querySelector('#ppotoolHeader');
 
     resizer.addEventListener('mousedown', (e) => {
         isResizing = true;
@@ -93,7 +94,7 @@ function startup() {
         isResizing = false;
     });
 
-    document.getElementById('ppotoolHeader').addEventListener('mousedown', (e) => {
+    ppotoolHeader.addEventListener('mousedown', (e) => {
         isDragging = true;
         lastX = e.clientX;
         lastY = e.clientY;
