@@ -33,7 +33,7 @@ const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", 
 
 const ppotoolWindow = document.createElement('div');
 const ppotoolContent = document.createElement('div');
-const ppotoolHeader = ppotoolWindow.createElement('div');
+const ppotoolHeader = document.createElement('div');
 const resizer = document.createElement('div');
 
 // Settings Variables
