@@ -32,11 +32,17 @@ const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", 
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
 
 const ppotoolWindow = document.createElement('div');
+const ppotoolContent = document.createElement('div');
+const ppotoolHeader = document.createElement('div');
+const resizer = document.createElement('div');
 
 // Settings Variables
 let pokemonToCatchList = [];
 let shouldRunOnElite = false;
 let mode = "default"
+let isResizing = false;
+let lastX, lastY, startX, startY;
+let isDragging = false;
 
 // Status Variables
 let isElite = false;
@@ -62,10 +68,69 @@ let p = null;
 
 function startup() {
     console.log("PPOTool > PPOTool started");
+    ppotoolWindow.appendChild(ppotoolHeader);
+    ppotoolWindow.appendChild(ppotoolContent);
     ppotoolWindow.style = "position:absolute;left:0;top:0;height:45%;width:25%;background-color:rgba(255,255,255,0.8);display:flex;flex-direction:column;font-family:\"Trebuchet MS\"";
-    ppotoolWindow.innerHTML = "<h2>PPOTool</h2><div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
+    ppotoolHeader.innerHTML = "<div id='ppotoolHeader' style='cursor: move; padding: 8px; background-color: #3498db; color: #fff;'>PPOTool</div>";
+    ppotoolContent.innerHTML = "<div></div>Welcome to the PPOTool. Just click on next and the setup will begin. When the tool is running, you can change " +
         "the List of Pokémon when it should stop. By Default, it will stop at all Very Rare, Extremely Rare and Legendary Pokémon.";
-    document.body.appendChild(ppotoolWindow);
+    resizer.style.cssText = "width: 10px; height: 10px; background-color: #3498db; position: absolute; bottom: 0; right: 0; cursor: se-resize;";
+    ppotoolWindow.appendChild(resizer);
+
+    const minimizeButton = document.createElement('button');
+    minimizeButton.textContent = 'Minimize';
+    minimizeButton.style.marginRight = '5px'; // Adjust margin as needed
+
+    // Add event listener to minimize button
+    minimizeButton.addEventListener('click', () => {
+        ppotoolContent.style.display = ppotoolContent.style.display === 'none' ? 'block' : 'none';
+    });
+
+    ppotoolHeader.appendChild(minimizeButton);
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isResizing) {
+            const width = ppotoolWindow.offsetWidth + (e.clientX - startX);
+            const height = ppotoolWindow.offsetHeight + (e.clientY - startY);
+            ppotoolWindow.style.width = `${width}px`;
+            ppotoolWindow.style.height = `${height}px`;
+            startX = e.clientX;
+            startY = e.clientY;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isResizing = false;
+    });
+
+    ppotoolHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            const newLeft = ppotoolWindow.offsetLeft + deltaX;
+            const newTop = ppotoolWindow.offsetTop + deltaY;
+            ppotoolWindow.style.left = `${newLeft}px`;
+            ppotoolWindow.style.top = `${newTop}px`;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
 
     const moveButton = document.createElement('button');
     moveButton.textContent = 'Normal Mode';
@@ -87,9 +152,11 @@ function startup() {
         runTool()
     });
 
-    ppotoolWindow.appendChild(moveButton);
-    ppotoolWindow.appendChild(fishButton);
-    ppotoolWindow.appendChild(miningButton)
+    ppotoolContent.appendChild(moveButton);
+    ppotoolContent.appendChild(fishButton);
+    ppotoolContent.appendChild(miningButton)
+
+    document.body.appendChild(ppotoolWindow);
 
     pokemonToCatchList = legendaries.concat(extremeRares, veryRares);
     pokemonToCatchList.sort();
@@ -131,13 +198,12 @@ function runAway() {
 }
 
 
-
 function runTool() {
-    if(mode === "default") {
-        ppotoolWindow.innerHTML = "<h2>Take a step in any direction</h2>";
+    if (mode === "default") {
+        ppotoolContent.innerHTML = "<h2>Take a step in any direction</h2>";
     }
-    if(mode === "fishing") {
-        ppotoolWindow.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
+    if (mode === "fishing") {
+        ppotoolContent.innerHTML = "<h2>Fishing mode activated</h2>Walk to water, use your fishing rod. Make sure that " +
             "you hook correctly in the green or yellow part. After that, select your action to use in the fight. After " +
             "that, everything is setup and you don't need to do anything.";
     }
@@ -184,7 +250,7 @@ function runTool() {
                 }
             }
 
-            if(receivedPackageAsString.includes("call.hook") && catchPackageBegin && !isPaused) {
+            if (receivedPackageAsString.includes("call.hook") && catchPackageBegin && !isPaused) {
                 let token = receivedPackage.slice(30, 46)
                 catchPackageToken = token
 
@@ -199,7 +265,7 @@ function runTool() {
                 const randomFraction = Math.random();
                 const randomNumber = Math.floor(randomFraction * (maxWaitTimeFish - minWaitTimeFish + 1)) + minWaitTimeFish;
 
-                setTimeout(function() {
+                setTimeout(function () {
                     socket.send(fullCatchPackage)
                 }, randomNumber);
             }
@@ -219,7 +285,7 @@ function runTool() {
         }
 
         if (origPackage.byteLength === 100 && !catchPackageBegin && mode === "fishing") {
-            ppotoolWindow.children[0].innerHTML = "Fishing is running! Refresh page to stop the bot."
+            ppotoolContent.innerHTML = "Fishing is running! Refresh page to stop the bot."
             setupUI()
             console.log("Initial Catch package received!")
             catchPackageBegin = new Uint8Array(origPackage.slice(0, 69))
@@ -230,10 +296,10 @@ function runTool() {
         if (origPackage.byteLength === 145 && !h && mode === "default") {
             w.push(origPackage);
             if (w.length === 2) {
-                ppotoolWindow.children[0].innerHTML = "Take a step in the opposite direction";
+                ppotoolContent.innerHTML = "Take a step in the opposite direction";
             }
             if (w.length === 4) {
-                ppotoolWindow.children[0].innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
+                ppotoolContent.innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
                 h = w;
                 doMovement()
                 setupUI()
@@ -269,7 +335,7 @@ function doMovement() {
                 socket.send(h[i]);
             }
         }
-        if(isPaused) {
+        if (isPaused) {
             clearInterval(x)
             console.log("PPOTool > Tool paused!")
         }
@@ -362,12 +428,12 @@ function setupUI() {
     });
 
     // Append the stop button to the ppotoolWindow
-    ppotoolWindow.appendChild(stopButton);
-    ppotoolWindow.appendChild(selectBox);
-    ppotoolWindow.appendChild(removeButton);
-    ppotoolWindow.appendChild(addButton);
-    ppotoolWindow.appendChild(runOnEliteCheckbox);
-    ppotoolWindow.appendChild(runOnEliteCheckboxLabel);
+    ppotoolContent.appendChild(stopButton);
+    ppotoolContent.appendChild(selectBox);
+    ppotoolContent.appendChild(removeButton);
+    ppotoolContent.appendChild(addButton);
+    ppotoolContent.appendChild(runOnEliteCheckbox);
+    ppotoolContent.appendChild(runOnEliteCheckboxLabel);
 
 
     function updateSelectBoxOptions() {
