@@ -14,7 +14,8 @@ const veryRares = ["Pikachu", "Raichu", "Vulpix", "Jigglypuff", "Psyduck", "Gold
     "Shuppet", "Banette", "Absol", "Clamperl", "Relicanth", "Starly", "Shinx", "Luxio", "Luxray", "Buizel",
     "Floatzel", "Happiny", "Croagunk", "Toxicroak", "Mantyke", "Yanmega", "Rotom", "Roggenrola", "Woobat",
     "Drilbur", "Excadrill", "Timburr", "Maractus", "Sigilyph", "Trubbish", "Zoroark", "Gothita", "Frillish",
-    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher", "Clefairy"]
+    "Jellicent", "Ferroseed", "Inkay", "Binacle", "Skrelp", "Clauncher", "Clefairy", "Rotom-Heat", "Rotom-Wash",
+    "Rotom-Frost", "Rotom-Fan", "Rotom-Mow"]
 
 const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squirtle", "Blastoise", "Machoke",
     "Farfetch'd", "Onix", "Rhyhorn", "Kangaskhan", "Scyther", "Electabuzz", "Pinsir", "Snorlax", "Dratini", "Dragonair",
