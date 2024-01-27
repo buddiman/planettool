@@ -140,9 +140,9 @@ function startup() {
         runTool()
     });
 
-    ppotoolWindow.appendChild(moveButton);
-    ppotoolWindow.appendChild(fishButton);
-    ppotoolWindow.appendChild(miningButton)
+    ppotoolContent.appendChild(moveButton);
+    ppotoolContent.appendChild(fishButton);
+    ppotoolContent.appendChild(miningButton)
 
     document.body.appendChild(ppotoolWindow);
 
@@ -417,12 +417,12 @@ function setupUI() {
     });
 
     // Append the stop button to the ppotoolWindow
-    ppotoolWindow.appendChild(stopButton);
-    ppotoolWindow.appendChild(selectBox);
-    ppotoolWindow.appendChild(removeButton);
-    ppotoolWindow.appendChild(addButton);
-    ppotoolWindow.appendChild(runOnEliteCheckbox);
-    ppotoolWindow.appendChild(runOnEliteCheckboxLabel);
+    ppotoolContent.appendChild(stopButton);
+    ppotoolContent.appendChild(selectBox);
+    ppotoolContent.appendChild(removeButton);
+    ppotoolContent.appendChild(addButton);
+    ppotoolContent.appendChild(runOnEliteCheckbox);
+    ppotoolContent.appendChild(runOnEliteCheckboxLabel);
 
 
     function updateSelectBoxOptions() {
