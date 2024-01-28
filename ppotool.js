@@ -227,7 +227,7 @@ function runTool() {
 
                 if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                     sendStopMessageToDiscord()
-                    if (shouldRunOnElite && isElite) {
+                    if (shouldRunOnElite && isElite && !pokemonToCatchList.includes(currentPokemonName)) {
                         runAway()
                         console.log("PPOTool > Successfully ran away from Elite!")
                     }
