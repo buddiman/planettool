@@ -39,6 +39,7 @@ const resizer = document.createElement('div');
 // Settings Variables
 let pokemonToCatchList = [];
 let shouldRunOnElite = false;
+let shouldFightAllElites = false;
 let mode = "default"
 let isResizing = false;
 let lastX, lastY, startX, startY;
@@ -227,9 +228,16 @@ function runTool() {
 
                 if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                     sendStopMessageToDiscord()
-                    if (shouldRunOnElite && isElite && !pokemonToCatchList.includes(currentPokemonName)) {
-                        runAway()
-                        console.log("PPOTool > Successfully ran away from Elite!")
+                    if(isElite && !pokemonToCatchList.includes(currentPokemonName)) {
+                        if(shouldFightAllElites) {
+                            fight()
+                            console.log("PPOTool > Forcing fighting all elites without stop")
+                            return
+                        }
+                        if(shouldRunOnElite) {
+                            runAway()
+                            console.log("PPOTool > Successfully ran away from Elite!")
+                        }
                     }
                     return;
                 }
@@ -408,23 +416,39 @@ function setupUI() {
         }
     });
 
-    // Create a checkbox element
+
     const runOnEliteCheckbox = document.createElement('input');
     runOnEliteCheckbox.type = 'checkbox';
+    runOnEliteCheckbox.id = 'runOnEliteCheckbox';
 
     const runOnEliteCheckboxLabel = document.createElement('label');
     runOnEliteCheckboxLabel.textContent = 'Run on all ELITES?';
+    runOnEliteCheckboxLabel.htmlFor = 'runOnEliteCheckbox';
 
     runOnEliteCheckbox.style.marginTop = '10px';
     runOnEliteCheckbox.style.marginRight = '5px';
     runOnEliteCheckboxLabel.style.marginTop = '10px';
 
     runOnEliteCheckbox.addEventListener('change', function () {
-        // Update the global variable based on the checkbox state
         shouldRunOnElite = runOnEliteCheckbox.checked;
-
-        // Perform any actions with the updated value
         console.log('PPOTool > Checkbox state changed. shouldRunOnElite:', shouldRunOnElite);
+    });
+
+    const fightAllEliteCheckbox = document.createElement('input');
+    fightAllEliteCheckbox.type = 'checkbox';
+    fightAllEliteCheckbox.id = 'fightAllEliteCheckbox';
+
+    const fightAllEliteCheckboxLabel = document.createElement('label');
+    fightAllEliteCheckboxLabel.textContent = 'Fight ALL ELITES? (Prio over run!)';
+    fightAllEliteCheckboxLabel.htmlFor = 'fightAllEliteCheckbox';
+
+    fightAllEliteCheckbox.style.marginTop = '10px';
+    fightAllEliteCheckbox.style.marginRight = '5px';
+    fightAllEliteCheckboxLabel.style.marginTop = '10px';
+
+    fightAllEliteCheckbox.addEventListener('change', function () {
+        shouldFightAllElites = fightAllEliteCheckbox.checked;
+        console.log('PPOTool > Checkbox state changed. shouldfightAllElite:', shouldFightAllElites);
     });
 
     // Append the stop button to the ppotoolWindow
@@ -434,6 +458,8 @@ function setupUI() {
     ppotoolContent.appendChild(addButton);
     ppotoolContent.appendChild(runOnEliteCheckbox);
     ppotoolContent.appendChild(runOnEliteCheckboxLabel);
+    ppotoolContent.appendChild(fightAllEliteCheckbox)
+    ppotoolContent.appendChild(fightAllEliteCheckboxLabel)
 
 
     function updateSelectBoxOptions() {
