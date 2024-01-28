@@ -493,7 +493,9 @@ function checkForShinyAndElite(battlePackageAsString) {
         isElite = true;
     }
 
-    if (battlePackageAsString.includes("shiny")) {
+    const regex = /\|p2\|.*shiny\|/;
+
+    if(regex.test(battlePackageAsString)) {
         console.log("PPOTool > SHINY FOUND!")
         isShiny = true;
     }
