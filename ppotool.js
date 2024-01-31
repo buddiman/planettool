@@ -31,6 +31,14 @@ const extremeRares = ["Bulbasaur", "Venusaur", "Charmander", "Charizard", "Squir
 const legendaries = ["Articuno", "Zapdos", "Moltres", "Mew", "Raikou", "Entei", "Suicune", "Heatran",
     "Cresselia", "Manaphy", "Darkrai", "Shaymin"]
 
+const Directions = {
+    None: 0,
+    Up: 1,
+    Right: 2,
+    Down: 3,
+    Left: 4
+}
+
 const ppotoolWindow = document.createElement('div');
 const ppotoolContent = document.createElement('div');
 const ppotoolHeader = document.createElement('div');
@@ -51,6 +59,15 @@ let isShiny = false;
 let isPaused = false;
 let isInBattle = false;
 let currentPokemonName = '';
+let playerXcoord = 0;
+let playerYcoord = 0;
+let playerDirection = Directions.Down;
+let stepCounter = 0;
+let incrementMoveEvents = 0;
+let xsteps = 0;
+let needTurnaround = true;
+let walkRight = true;
+let isMovePackageInitialized = false
 
 // Package Variables
 let fullFightPackage = null;
@@ -59,6 +76,7 @@ let fightPackageEnd = null
 let catchPackageBegin = null;
 let catchPackageToken = null;
 let catchPackageEnd = null;
+let fullMovePackage = null;
 
 // Other Variables
 let socket = null;
@@ -215,6 +233,11 @@ function runTool() {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
 
+            if (receivedPackageAsString.includes("OK") && isMovePackageInitialized) {
+                buildMovementPackage()
+                socket.send(fullMovePackage)
+            }
+
             if (receivedPackageAsString.includes("gametype")) {
                 setCurrentPokemonName(receivedPackageAsString)
                 checkForShinyAndElite(receivedPackageAsString)
@@ -228,13 +251,13 @@ function runTool() {
 
                 if (pokemonToCatchList.includes(currentPokemonName) || isElite || isShiny) {
                     sendStopMessageToDiscord()
-                    if(isElite && !pokemonToCatchList.includes(currentPokemonName)) {
-                        if(shouldFightAllElites) {
+                    if (isElite && !pokemonToCatchList.includes(currentPokemonName)) {
+                        if (shouldFightAllElites) {
                             fight()
                             console.log("PPOTool > Forcing fighting all elites without stop")
                             return
                         }
-                        if(shouldRunOnElite) {
+                        if (shouldRunOnElite) {
                             runAway()
                             console.log("PPOTool > Successfully ran away from Elite!")
                         }
@@ -301,18 +324,19 @@ function runTool() {
         }
 
         // 0x91 = 145
-        if (origPackage.byteLength === 145 && !h && mode === "default") {
-            w.push(origPackage);
-            if (w.length === 2) {
-                ppotoolContent.innerHTML = "Take a step in the opposite direction";
-            }
-            if (w.length === 4) {
-                ppotoolContent.innerHTML = "Use a move once the encounter starts. This move will be executed everytime in a fight now. Refresh page to stop the bot.";
-                h = w;
-                doMovement()
-                setupUI()
+        if (origPackage.byteLength === 145 && (!fullMovePackage || isPaused) && mode === "default") {
+            fullMovePackage = origPackage;
 
-            }
+            incrementMoveEvents = readInt64LE(origPackage, 0x3e, 4)
+            stepCounter = readInt64LE(origPackage, 0x54, 4)
+            playerDirection = origPackage[0x5c]
+            playerXcoord = readInt64LE(origPackage, 0x72)
+            playerYcoord = readInt64LE(origPackage, 0x69)
+            isMovePackageInitialized = true
+
+            setupUI()
+            buildMovementPackage()
+            socket.send(fullMovePackage)
         }
 
         if (!socket) {
@@ -325,19 +349,87 @@ function runTool() {
 
 startup()
 
+function buildMovementPackage() {
+    if (needTurnaround) {
+        fullMovePackage[0x90] = 0x00;
+        setInt64LE(fullMovePackage, 0x3e, ++incrementMoveEvents, 4)
+        if (walkRight) {
+            fullMovePackage[0x5c] = Directions.Right;
+            walkRight = false;
+        } else {
+            fullMovePackage[0x5c] = Directions.Left;
+            walkRight = true;
+        }
+        xsteps = 0
+        needTurnaround = false
+        console.log("Turnaround finished!")
+
+    } else {
+        setInt64LE(fullMovePackage, 0x3e, ++incrementMoveEvents, 4)
+        setInt64LE(fullMovePackage, 0x54, ++stepCounter, 4)
+        if(walkRight) {
+            setInt64LE(fullMovePackage, 0x72, ++playerXcoord)
+            fullMovePackage[0x5c] = Directions.Right;
+        } else {
+            setInt64LE(fullMovePackage, 0x72, --playerXcoord)
+            fullMovePackage[0x5c] = Directions.Left;
+        }
+
+        console.log("Moved to X-Coord " + playerXcoord)
+
+        fullMovePackage[0x90] = 0x01;
+
+        xsteps++
+        if (xsteps === 3) {
+            needTurnaround = true
+        }
+
+    }
+}
+
+function readInt64LE(bytes, offset, typeOffset = 0) {
+    // This reads only an int32!!
+    const buffer = new ArrayBuffer(8);
+    const dataView = new DataView(buffer);
+
+    for (let i = 0; i < 4; i++) {
+        dataView.setUint8(i, bytes[offset + i + typeOffset]);
+    }
+
+    return dataView.getUint32(0, true);
+}
+
+function setInt64LE(bytes, offset, value, typeOffset = 0) {
+    // This sets only an int32!!
+    const dataView = new DataView(bytes.buffer);
+
+    // Set the 32-bit integer at the specified offset in little-endian format
+    dataView.setInt32(offset + typeOffset, value, true);
+}
+
 function doMovement() {
     x = setInterval(() => {
+        // 0x3e bis 0x45 = Probably Incremental ID?!?, LONG, Check if reset at 255 pro, action auch turnen!
+        // 0x54 = Step counter, only increases on step, not on direction change, also over 0xFF
+        // 0x5c = Direction! u 1, r 2, d 3, l 4
+        // 0x69 bis 0x6C = Y-Coord
+        // 0x72 bis 0x75 = X-Coord
+        // 0x90 = 0x00 when turning, 0x01 when walking
+        // 0x0B bis 0x0E = Target Y-Coord from Direction. Up = Y - 1, Down = Y + 1. R/L = Y
+
         // MOVEMENT HERE!
         if (!isInBattle) {
             for (i = 0; i < 4; i++) {
                 for (j = 0; j < 4; j++) {
+
+
                     let _0x458770 = new Uint8Array(h[j]);
                     _0x458770[0x45]++;
-                    if (_0x458770[69] == 0) {
-                        _0x458770[68]++;
+                    if (_0x458770[0x45] == 0) {
+                        _0x458770[0x44]++;
                     }
                     if (i % 2 > 0) {
-                        _0x458770[84]++;
+                        _0x458770[0x54]++;
                     }
                 }
                 socket.send(h[i]);
@@ -410,7 +502,6 @@ function setupUI() {
             stopButton.textContent = 'Tool is NOT running... Click here to restart!'
         } else {
             isPaused = false
-            doMovement()
             stopButton.style.backgroundColor = 'green'
             stopButton.textContent = 'Tool is running... Click here to pause!'
         }
@@ -495,7 +586,7 @@ function checkForShinyAndElite(battlePackageAsString) {
 
     const regex = /\|p2\|.*shiny\|/;
 
-    if(regex.test(battlePackageAsString)) {
+    if (regex.test(battlePackageAsString)) {
         console.log("PPOTool > SHINY FOUND!")
         isShiny = true;
     }
