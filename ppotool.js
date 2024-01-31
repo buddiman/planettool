@@ -393,6 +393,7 @@ function readInt64LE(bytes, offset, typeOffset = 0) {
     const dataView = new DataView(buffer);
 
     for (let i = 0; i < 4; i++) {
+        console.log(bytes[offset + i + typeOffset])
         dataView.setUint8(i, bytes[offset + i + typeOffset]);
     }
 
@@ -405,41 +406,6 @@ function setInt64LE(bytes, offset, value, typeOffset = 0) {
 
     // Set the 32-bit integer at the specified offset in little-endian format
     dataView.setInt32(offset + typeOffset, value, true);
-}
-
-function doMovement() {
-    x = setInterval(() => {
-        // 0x3e bis 0x45 = Probably Incremental ID?!?, LONG, Check if reset at 255 pro, action auch turnen!
-        // 0x54 = Step counter, only increases on step, not on direction change, also over 0xFF
-        // 0x5c = Direction! u 1, r 2, d 3, l 4
-        // 0x69 bis 0x6C = Y-Coord
-        // 0x72 bis 0x75 = X-Coord
-        // 0x90 = 0x00 when turning, 0x01 when walking
-        // 0x0B bis 0x0E = Target Y-Coord from Direction. Up = Y - 1, Down = Y + 1. R/L = Y
-
-        // MOVEMENT HERE!
-        if (!isInBattle) {
-            for (i = 0; i < 4; i++) {
-                for (j = 0; j < 4; j++) {
-
-
-                    let _0x458770 = new Uint8Array(h[j]);
-                    _0x458770[0x45]++;
-                    if (_0x458770[0x45] == 0) {
-                        _0x458770[0x44]++;
-                    }
-                    if (i % 2 > 0) {
-                        _0x458770[0x54]++;
-                    }
-                }
-                socket.send(h[i]);
-            }
-        }
-        if (isPaused) {
-            clearInterval(x)
-            console.log("PPOTool > Tool paused!")
-        }
-    }, 400);
 }
 
 function setupUI() {
