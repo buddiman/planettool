@@ -233,12 +233,6 @@ function runTool() {
             let receivedPackage = new Uint8Array(webSocketReader.result);
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
 
-            if (receivedPackageAsString.includes("OK") && isMovePackageInitialized) {
-                console.log("found OK")
-                buildMovementPackage()
-                socket.send(fullMovePackage)
-            }
-
             if (receivedPackageAsString.includes("gametype")) {
                 setCurrentPokemonName(receivedPackageAsString)
                 checkForShinyAndElite(receivedPackageAsString)
@@ -342,6 +336,14 @@ function runTool() {
             console.log("Movepackage initialized")
 
             setupUI()
+
+            const interval = setInterval(function() {
+                buildMovementPackage()
+                socket.send(fullMovePackage)
+            }, 5000);
+
+
+
         }
         webSocketSend.call(this, origPackage);
     };
@@ -355,10 +357,10 @@ function buildMovementPackage() {
         fullMovePackage[0x90] = 0x00;
         setInt64LE(fullMovePackage, 0x3e, ++incrementMoveEvents, 4)
         if (walkRight) {
-            fullMovePackage[0x5c] = Directions.Right;
+            fullMovePackage[0x5c] = Directions.Left;
             walkRight = false;
         } else {
-            fullMovePackage[0x5c] = Directions.Left;
+            fullMovePackage[0x5c] = Directions.Right;
             walkRight = true;
         }
         xsteps = 0
