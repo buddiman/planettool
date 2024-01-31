@@ -401,7 +401,7 @@ function readInt64LE(bytes, offset, typeOffset = 0) {
 
 function setInt64LE(bytes, offset, value, typeOffset = 0) {
     // This sets only an int32!!
-    const dataView = new DataView(bytes.buffer);
+    const dataView = new DataView(bytes);
 
     // Set the 32-bit integer at the specified offset in little-endian format
     dataView.setInt32(offset + typeOffset, value, true);
