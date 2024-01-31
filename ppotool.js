@@ -306,6 +306,11 @@ function runTool() {
 
     const webSocketSend = WebSocket.prototype.send;
     WebSocket.prototype.send = function (origPackage) {
+        if (!socket) {
+            socket = this;
+            socket.addEventListener("message", z);
+        }
+
         if (origPackage == null) {
             return;
         }
