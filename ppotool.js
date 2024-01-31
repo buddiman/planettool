@@ -332,21 +332,14 @@ function runTool() {
         if (origPackage.byteLength === 145 && (!fullMovePackage || isPaused) && mode === "default") {
             fullMovePackage = origPackage;
 
-            incrementMoveEvents = readInt64LE(origPackage, 0x3e, 4)
-            stepCounter = readInt64LE(origPackage, 0x54, 4)
+            incrementMoveEvents = origPackage[0x45]
+            stepCounter = origPackage[0x54]
             playerDirection = origPackage[0x5c]
-            playerXcoord = readInt64LE(origPackage, 0x72)
-            playerYcoord = readInt64LE(origPackage, 0x69)
+            playerXcoord = origPackage[0x64]
+            playerYcoord = origPackage[0x6c]
             isMovePackageInitialized = true
 
             setupUI()
-            buildMovementPackage()
-            socket.send(fullMovePackage)
-        }
-
-        if (!socket) {
-            socket = this;
-            socket.addEventListener("message", z);
         }
         webSocketSend.call(this, origPackage);
     };
@@ -355,6 +348,7 @@ function runTool() {
 startup()
 
 function buildMovementPackage() {
+    console.log("building movement package")
     if (needTurnaround) {
         fullMovePackage[0x90] = 0x00;
         setInt64LE(fullMovePackage, 0x3e, ++incrementMoveEvents, 4)
@@ -386,6 +380,7 @@ function buildMovementPackage() {
 
         xsteps++
         if (xsteps === 3) {
+            console.log("Set turnaround")
             needTurnaround = true
         }
 
