@@ -389,7 +389,7 @@ function buildMovementPackage() {
 
 function readInt64LE(bytes, offset, typeOffset = 0) {
     // This reads only an int32!!
-    const buffer = new ArrayBuffer(8);
+    const buffer = new ArrayBuffer(4);
     const dataView = new DataView(buffer);
 
     for (let i = 0; i < 4; i++) {
