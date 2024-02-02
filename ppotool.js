@@ -326,18 +326,45 @@ function runTool() {
 startup()
 
 function doMovement() {
+    let _0x458770 = new Uint8Array(h[0]);
+    _0x458770[0x90] = 0x01;
     x = setInterval(() => {
         // MOVEMENT HERE!
+        let reverse = false
         if (!isInBattle) {
             for (i = 0; i < 4; i++) {
                 for (j = 0; j < 4; j++) {
-                    let _0x458770 = new Uint8Array(h[j]);
                     _0x458770[0x45]++;
-                    if (_0x458770[69] == 0) {
-                        _0x458770[68]++;
+                    if (_0x458770[0x45] == 0) {
+                        _0x458770[0x44]++;
+                        if(_0x458770[0x44] == 0) {
+                            _0x458770[0x43]++;
+                            if(_0x458770[0x43] == 0) {
+                                _0x458770[0x42]++;
+                            }
+                        }
                     }
-                    if (i % 2 > 0) {
-                        _0x458770[84]++;
+                    _0x458770[0x54]++;
+                    if (_0x458770[0x54] == 0) {
+                        _0x458770[0x53]++;
+                        if(_0x458770[0x53] == 0) {
+                            _0x458770[0x52]++;
+                            if(_0x458770[0x52] == 0) {
+                                _0x458770[0x51]++;
+                            }
+                        }
+                    }
+                    if(reverse) {
+                        _0x458770[0x64]--
+                        if(j == 4) {
+                            reverse = false
+                        }
+                    }
+                    if(!reverse) {
+                        _0x458770[0x64]++
+                        if(j == 4) {
+                            reverse = true
+                        }
                     }
                 }
                 socket.send(h[i]);
