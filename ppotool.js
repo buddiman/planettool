@@ -234,7 +234,6 @@ function runTool() {
             let receivedPackageAsString = String.fromCharCode(...receivedPackage);
 
             if (receivedPackageAsString.includes("OK") && isMovePackageInitialized) {
-                console.log("found OK")
                 buildMovementPackage()
                 socket.send(fullMovePackage)
             }
@@ -339,7 +338,6 @@ function runTool() {
             playerXcoord = origPackage[0x64]
             playerYcoord = origPackage[0x6c]
             isMovePackageInitialized = true
-            console.log("Movepackage initialized")
 
             setupUI()
         }
